@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck", "MethodCheck\MethodCheck.csproj", "{FDA76E88-8EE7-4C75-8213-7C41C32840EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck.Test", "MethodCheck.Test\MethodCheck.Test.csproj", "{97C5075D-94ED-4185-BB87-ADEB0AE63029}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDA76E88-8EE7-4C75-8213-7C41C32840EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA76E88-8EE7-4C75-8213-7C41C32840EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA76E88-8EE7-4C75-8213-7C41C32840EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA76E88-8EE7-4C75-8213-7C41C32840EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97C5075D-94ED-4185-BB87-ADEB0AE63029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97C5075D-94ED-4185-BB87-ADEB0AE63029}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97C5075D-94ED-4185-BB87-ADEB0AE63029}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9FEC8C29-B1AC-43E7-8710-2523DD1452BD}
+	EndGlobalSection
+EndGlobal

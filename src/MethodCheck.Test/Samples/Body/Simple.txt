@@ -1,0 +1,10 @@
+//[Header]
+06 // CorILMethod_TinyFormat, code size: 1
+
+//[IL]
+2A             // ret
+====
+.maxstack 8
+// code size: 1
+  ret
+

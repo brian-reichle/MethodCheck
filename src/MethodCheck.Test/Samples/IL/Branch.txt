@@ -1,0 +1,14 @@
+//[IL]
+02             // ldarg.0
+2C 02          // brfalse.s +2
+2B FB          // br.s -5
+2A             // ret
+====
+IL_0000
+  ldarg.0
+  brfalse.s       IL_0005 // +2
+  br.s            IL_0000 // -5
+
+IL_0005
+  ret
+

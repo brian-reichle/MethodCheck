@@ -1,0 +1,65 @@
+<Window
+	x:Class="MethodCheck.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:MethodCheck"
+	Title="Method-Check"
+	Height="600"
+	Width="700"
+	Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+	>
+	<Window.CommandBindings>
+		<CommandBinding Command="Close" Executed="CloseExecuted" />
+		<CommandBinding Command="{x:Static local:MainWindow.Run}" Executed="RunExecuted" />
+		<CommandBinding Command="{x:Static local:MainWindow.SetFocus}" Executed="SetFocusExecuted" />
+	</Window.CommandBindings>
+
+	<Window.InputBindings>
+		<KeyBinding Gesture="F5" Command="{x:Static local:MainWindow.Run}" />
+		<KeyBinding Gesture="Esc" Command="{x:Static local:MainWindow.SetFocus}" CommandTarget="{x:Reference BytesTextBox}" />
+	</Window.InputBindings>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="3" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<Menu Grid.Row="0">
+			<MenuItem Header="File">
+				<MenuItem Header="Exit" Command="Close" />
+			</MenuItem>
+		</Menu>
+		<ToolBarTray Grid.Row="1">
+			<ToolBar>
+				<RadioButton Name="SourceTypeIL" Content="IL" IsChecked="True" Command="{x:Static local:MainWindow.Run}" />
+				<RadioButton Name="SourceTypeBody" Content="Body" Command="{x:Static local:MainWindow.Run}" />
+			</ToolBar>
+			<ToolBar>
+				<Button Content="Refresh" Command="{x:Static local:MainWindow.Run}" />
+			</ToolBar>
+		</ToolBarTray>
+
+		<TextBox
+			Grid.Row="2"
+			Name="BytesTextBox"
+			Style="{StaticResource FixedWidthTextBox}"
+			LostFocus="BytesTextBox_LostFocus"
+			/>
+
+		<GridSplitter
+			Grid.Row="3"
+			HorizontalAlignment="Stretch"
+			/>
+
+		<TextBox
+			Grid.Row="4"
+			Name="ILTextBox"
+			Style="{StaticResource FixedWidthTextBox}"
+			IsReadOnly="True"
+			/>
+	</Grid>
+</Window>

@@ -1,0 +1,97 @@
+// Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
+<#@template language="C#" hostspecific="true" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Reflection.Emit" #>
+<#@output extension=".g.cs" #>
+<#
+var allOpCodes = Enumerable.ToArray(
+	from field in typeof(OpCodes).GetFields()
+	let value = (OpCode)field.GetValue(null)
+	where value.OpCodeType != OpCodeType.Nternal
+	select new
+	{
+		Field = field.Name,
+		value.Name,
+		value.OpCodeType,
+		value.Value,
+		value.Size,
+		value.OperandType,
+	});
+
+var singleByteOpCodes = Enumerable.ToArray(
+	from opCode in allOpCodes
+	where opCode.Size == 1
+	select opCode);
+
+var doubleByteOpCodes = Enumerable.ToArray(
+	from opCode in allOpCodes
+	where opCode.Size == 2
+	let firstByte = opCode.Value >> 8 & 0xFF
+	group opCode by firstByte into g
+	orderby g.Key
+	select g);
+#>
+using System.Reflection.Emit;
+using MethodCheck.Data;
+
+namespace MethodCheck.Parsing
+{
+	partial class ILReader
+	{
+		Instruction Read()
+		{
+			switch (_buffer[_offset])
+			{
+<#
+foreach (var opCode in singleByteOpCodes)
+{
+#>
+				case 0x<#=opCode.Value.ToString("X2")#>: return Read<#=GetLabel(opCode.OperandType)#>Instruction(OpCodes.<#=opCode.Field#>);
+<#
+}
+
+foreach (var group in doubleByteOpCodes)
+{
+#>
+				case 0x<#=group.Key.ToString("X2")#>:
+					switch (_buffer[_offset + 1])
+					{
+<#
+	foreach (var opCode in group)
+	{
+#>
+						case 0x<#=(opCode.Value & 0xFF).ToString("X2")#>: return Read<#=GetLabel(opCode.OperandType)#>Instruction(OpCodes.<#=opCode.Field#>);
+<#
+	}
+}
+#>
+					}
+					break;
+			}
+
+			throw new ILException();
+		}
+	}
+}
+<#+
+static string GetLabel(OperandType type)
+{
+	switch (type)
+	{
+		case OperandType.InlineType:
+		case OperandType.InlineMethod:
+		case OperandType.InlineField:
+		case OperandType.InlineSig:
+		case OperandType.InlineString:
+			return OperandType.InlineTok.ToString();
+
+		default: return type.ToString();
+	}
+}
+#>

@@ -1,0 +1,9 @@
+//[IL]
+FE 14          // tail.
+6F 1A 00 00 0A // callvirt 0A00001A
+2A             // ret
+====
+  tail.
+  callvirt        0A00001A
+  ret
+
