@@ -1,6 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Text;
 using MethodCheck.Data;
@@ -12,6 +12,8 @@ namespace MethodCheck
 	{
 		public static string Format(MethodData data)
 		{
+			if (data == null) throw new ArgumentNullException(nameof(data));
+
 			var builder = new StringBuilder();
 			var jumpTargets = CollectJumpTargets(data);
 
@@ -22,7 +24,7 @@ namespace MethodCheck
 			return builder.ToString();
 		}
 
-		static void WriteInstructions(MethodData data, StringBuilder builder, HashSet<Label> jumpTargets)
+		static void WriteInstructions(MethodData data, StringBuilder builder, ImmutableHashSet<Label> jumpTargets)
 		{
 			foreach (var instruction in data.Instructions)
 			{
@@ -57,108 +59,124 @@ namespace MethodCheck
 
 		static void WriteExceptionHandlers(MethodData data, StringBuilder builder)
 		{
-			foreach (var ex in data.DataSections.SelectMany(x => x.ExceptionHandlers))
+			foreach (var section in data.DataSections)
 			{
-				builder.Append(".try ");
-				builder.Append(ex.TryRange.Offset);
-				builder.Append(" to ");
-				builder.Append(ex.TryRange.Offset + ex.TryRange.Length);
-
-				switch (ex.Type)
+				foreach (var handler in section.ExceptionHandlers)
 				{
-					case ExceptionHandlingClauseOptions.Clause:
-						builder.Append(" catch ");
-						builder.Append((MetadataToken)ex.FilterOrType);
-						builder.Append(' ');
-						break;
-
-					case ExceptionHandlingClauseOptions.Fault:
-						builder.Append(" fault ");
-						break;
-
-					case ExceptionHandlingClauseOptions.Finally:
-						builder.Append(" finally ");
-						break;
-
-					case ExceptionHandlingClauseOptions.Filter:
-						builder.Append(" filter ");
-						builder.Append(new Label(ex.FilterOrType));
-						builder.Append(' ');
-						break;
+					WriteExceptionHandler(builder, handler);
 				}
-
-				builder.Append(ex.HandlerRange.Offset);
-				builder.Append(" to ");
-				builder.Append(ex.HandlerRange.Offset + ex.HandlerRange.Length);
-				builder.AppendLine();
 			}
+		}
+
+		static void WriteExceptionHandler(StringBuilder builder, ExceptionHandler handler)
+		{
+			builder.Append(".try ");
+			builder.Append(handler.TryRange.Offset);
+			builder.Append(" to ");
+			builder.Append(handler.TryRange.Offset + handler.TryRange.Length);
+
+			switch (handler.Type)
+			{
+				case ExceptionHandlingClauseOptions.Clause:
+					builder.Append(" catch ");
+					builder.Append((MetadataToken)handler.FilterOrType);
+					builder.Append(' ');
+					break;
+
+				case ExceptionHandlingClauseOptions.Fault:
+					builder.Append(" fault ");
+					break;
+
+				case ExceptionHandlingClauseOptions.Finally:
+					builder.Append(" finally ");
+					break;
+
+				case ExceptionHandlingClauseOptions.Filter:
+					builder.Append(" filter ");
+					builder.Append(new Label(handler.FilterOrType));
+					builder.Append(' ');
+					break;
+			}
+
+			builder.Append(handler.HandlerRange.Offset);
+			builder.Append(" to ");
+			builder.Append(handler.HandlerRange.Offset + handler.HandlerRange.Length);
+			builder.AppendLine();
 		}
 
 		static void WriteArgument(StringBuilder builder, Instruction instruction)
 		{
-			if (instruction.Argument is Label[] labelArr)
+			switch (instruction.Argument)
 			{
-				builder.Append('{');
-
-				foreach (var label in labelArr)
-				{
-					builder.Append(' ');
+				case Label label:
+					var diff = label - (instruction.Range.Offset + instruction.Range.Length);
 					builder.Append(label);
-				}
+					builder.Append(" // ");
 
-				builder.Append(" }");
-			}
-			else if (instruction.Argument is Label label)
-			{
-				var diff = label - (instruction.Range.Offset + instruction.Range.Length);
-				builder.Append(label);
-				builder.Append(" // ");
+					if (diff >= 0)
+					{
+						builder.Append('+');
+					}
 
-				if (diff >= 0)
-				{
-					builder.Append('+');
-				}
+					builder.Append(diff);
+					break;
 
-				builder.Append(diff);
-			}
-			else
-			{
-				builder.Append(instruction.Argument);
+				case ImmutableArray<Label> labels:
+					builder.Append('{');
+
+					foreach (var label in labels)
+					{
+						builder.Append(' ');
+						builder.Append(label);
+					}
+
+					builder.Append(" }");
+					break;
+
+				default:
+					builder.Append(instruction.Argument);
+					break;
 			}
 		}
 
-		static HashSet<Label> CollectJumpTargets(MethodData data)
+		static ImmutableHashSet<Label> CollectJumpTargets(MethodData data)
 		{
-			var jumpTargets = new HashSet<Label>();
+			var jumpTargets = ImmutableHashSet.CreateBuilder<Label>();
 
 			foreach (var instruction in data.Instructions)
 			{
-				if (instruction.Argument is Label label)
+				switch (instruction.Argument)
 				{
-					jumpTargets.Add(label);
+					case Label label:
+						jumpTargets.Add(label);
+						break;
+
+					case ImmutableArray<Label> labels:
+						for (var i = 0; i < labels.Length; i++)
+						{
+							jumpTargets.Add(labels[i]);
+						}
+						break;
 				}
-				else if (instruction.Argument is Label[] argArr)
+			}
+
+			foreach (var section in data.DataSections)
+			{
+				foreach (var handler in section.ExceptionHandlers)
 				{
-					for (var i = 0; i < argArr.Length; i++)
+					jumpTargets.Add(handler.TryRange.Offset);
+					jumpTargets.Add(handler.TryRange.Offset + handler.TryRange.Length);
+					jumpTargets.Add(handler.HandlerRange.Offset);
+					jumpTargets.Add(handler.HandlerRange.Offset + handler.HandlerRange.Length);
+
+					if (handler.Type == ExceptionHandlingClauseOptions.Filter)
 					{
-						jumpTargets.Add(argArr[i]);
+						jumpTargets.Add(new Label(handler.FilterOrType));
 					}
 				}
 			}
 
-			foreach (var ex in data.DataSections.SelectMany(x => x.ExceptionHandlers))
-			{
-				jumpTargets.Add(ex.TryRange.Offset);
-				jumpTargets.Add(ex.TryRange.Offset + ex.TryRange.Length);
-				jumpTargets.Add(ex.HandlerRange.Offset);
-				jumpTargets.Add(ex.HandlerRange.Offset + ex.HandlerRange.Length);
-
-				if (ex.Type == ExceptionHandlingClauseOptions.Filter)
-				{
-					jumpTargets.Add(new Label(ex.FilterOrType));
-				}
-			}
-			return jumpTargets;
+			return jumpTargets.ToImmutable();
 		}
 
 		static void WriteHeader(MethodData data, StringBuilder builder)

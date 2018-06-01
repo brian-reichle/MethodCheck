@@ -1,6 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
-using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MethodCheck.Data
 {
@@ -10,12 +9,9 @@ namespace MethodCheck.Data
 			MetadataToken localsToken,
 			int maxStack,
 			int codeSize,
-			InstructionSequence instructions,
-			IReadOnlyList<MethodDataSection> dataSections)
+			ImmutableArray<Instruction> instructions,
+			ImmutableArray<MethodDataSection> dataSections)
 		{
-			if (instructions == null) throw new ArgumentNullException(nameof(instructions));
-			if (dataSections == null) throw new ArgumentNullException(nameof(dataSections));
-
 			LocalsToken = localsToken;
 			MaxStack = maxStack;
 			CodeSize = codeSize;
@@ -26,7 +22,7 @@ namespace MethodCheck.Data
 		public MetadataToken LocalsToken { get; }
 		public int MaxStack { get; }
 		public int CodeSize { get; }
-		public InstructionSequence Instructions { get; }
-		public IReadOnlyList<MethodDataSection> DataSections { get; }
+		public ImmutableArray<Instruction> Instructions { get; }
+		public ImmutableArray<MethodDataSection> DataSections { get; }
 	}
 }

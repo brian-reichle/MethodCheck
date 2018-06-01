@@ -1,18 +1,15 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
-using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MethodCheck.Data
 {
 	sealed class MethodDataSection
 	{
-		public MethodDataSection(IEnumerable<ExceptionHandler> exceptionHandlers)
+		public MethodDataSection(ImmutableArray<ExceptionHandler> exceptionHandlers)
 		{
-			if (exceptionHandlers == null) throw new ArgumentNullException(nameof(exceptionHandlers));
-
 			ExceptionHandlers = exceptionHandlers;
 		}
 
-		public IEnumerable<ExceptionHandler> ExceptionHandlers { get; }
+		public ImmutableArray<ExceptionHandler> ExceptionHandlers { get; }
 	}
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Threading;
 using MethodCheck.Data;
@@ -115,15 +116,15 @@ namespace MethodCheck.Parsing
 			pos += 4;
 			var relativeOffset = pos - _start + labelCount * 4;
 
-			var value = new Label[labelCount];
+			var builder = ImmutableArray.CreateBuilder<Label>(labelCount);
 
-			for (var i = 0; i < value.Length; i++)
+			for (var i = 0; i < labelCount; i++)
 			{
-				value[i] = relativeOffset + ReadInt32(pos);
+				builder.Add(relativeOffset + ReadInt32(pos));
 				pos += 4;
 			}
 
-			return CreateInstruction(pos - _offset, opcode, value);
+			return CreateInstruction(pos - _offset, opcode, builder.MoveToImmutable());
 		}
 
 		Instruction CreateInstruction(int length, OpCode opcode, object value) => new Instruction(new Range(_offset - _start, length), opcode, value);
