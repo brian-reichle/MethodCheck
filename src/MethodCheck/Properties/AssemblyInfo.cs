@@ -1,7 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Windows;
 
 [assembly: AssemblyTitle("MethodCheck")]
@@ -11,8 +10,5 @@ using System.Windows;
 [assembly: NeutralResourcesLanguage("en-AU")]
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
-
-[assembly: SecurityRules(SecurityRuleSet.Level2)]
-[assembly: SecurityTransparent]
 
 [assembly: InternalsVisibleTo("MethodCheck.Test")]
