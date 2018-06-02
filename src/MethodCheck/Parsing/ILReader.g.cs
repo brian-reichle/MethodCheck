@@ -4,7 +4,7 @@ using MethodCheck.Data;
 
 namespace MethodCheck.Parsing
 {
-	partial class ILReader
+	ref partial struct ILReader
 	{
 		Instruction Read()
 		{

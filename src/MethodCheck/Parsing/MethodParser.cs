@@ -2,30 +2,31 @@
 using System;
 using System.Collections.Immutable;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using MethodCheck.Data;
 
 namespace MethodCheck.Parsing
 {
 	static class MethodParser
 	{
-		public static MethodData ParseBody(byte[] blob)
+		public static MethodData ParseBody(ReadOnlySpan<byte> buffer)
 		{
-			if (blob.Length == 0)
+			if (buffer.Length == 0)
 			{
 				return null;
 			}
 
-			var type = blob[0] & 0x03;
+			var type = buffer[0] & 0x03;
 
 			try
 			{
 				if (type == CorILMethod_TinyFormat)
 				{
-					return ParseTiny(blob);
+					return ParseTiny(buffer);
 				}
 				else if (type == CorILMethod_FatFormat)
 				{
-					return ParseFat(blob);
+					return ParseFat(buffer);
 				}
 			}
 			catch (IndexOutOfRangeException)
@@ -38,39 +39,40 @@ namespace MethodCheck.Parsing
 			return null;
 		}
 
-		public static MethodData ParseIL(byte[] blob)
+		public static MethodData ParseIL(ReadOnlySpan<byte> buffer)
 		{
 			return new MethodData(
 				default,
 				0,
 				0,
-				ReadIL(blob, 0, blob.Length),
+				ReadIL(buffer),
 				ImmutableArray<MethodDataSection>.Empty);
 		}
 
-		static MethodData ParseTiny(byte[] blob)
+		static MethodData ParseTiny(ReadOnlySpan<byte> buffer)
 		{
-			var codeSize = blob[0] >> 2;
+			var codeSize = buffer[0] >> 2;
 
 			return new MethodData(
 				default,
 				8,
 				codeSize,
-				ReadIL(blob, 1, codeSize),
+				ReadIL(buffer.Slice(1, codeSize)),
 				ImmutableArray<MethodDataSection>.Empty);
 		}
 
-		static MethodData ParseFat(byte[] blob)
+		static MethodData ParseFat(ReadOnlySpan<byte> buffer)
 		{
-			if (blob.Length < 12) return null;
-			var headerLength = blob[1] >> 2 & 0x3C;
-			var codeSize = BitConverter.ToInt32(blob, 4);
+			if (buffer.Length < 12) return null;
+			var header = MemoryMarshal.Cast<byte, FatMethodHeader>(buffer)[0];
+			var headerLength = buffer[1] >> 2 & 0x3C;
 
 			ImmutableArray<MethodDataSection> dataSections;
 
-			if ((blob[0] & CorILMethod_MoreSects) != 0)
+			if ((buffer[0] & CorILMethod_MoreSects) != 0)
 			{
-				dataSections = ExtractDataSections(blob, headerLength, codeSize);
+				var sectionStart = (headerLength + header.CodeSize + 3) & ~3;
+				dataSections = CreateSections(buffer.Slice(sectionStart));
 			}
 			else
 			{
@@ -78,26 +80,31 @@ namespace MethodCheck.Parsing
 			}
 
 			return new MethodData(
-				BitConverter.ToInt32(blob, 8),
-				BitConverter.ToUInt16(blob, 2),
-				codeSize,
-				ReadIL(blob, headerLength, codeSize),
+				header.LocalVarSigTok,
+				header.MaxStack,
+				header.CodeSize,
+				ReadIL(buffer.Slice(headerLength, header.CodeSize)),
 				dataSections);
 		}
 
-		static ImmutableArray<Instruction> ReadIL(byte[] blob, int start, int length)
+		static ImmutableArray<Instruction> ReadIL(ReadOnlySpan<byte> buffer)
 		{
-			if (start >= blob.Length)
+			if (buffer.IsEmpty)
 			{
 				return ImmutableArray<Instruction>.Empty;
 			}
 
 			try
 			{
-				using (var reader = new ILReader(blob, start, length))
+				var result = ImmutableArray.CreateBuilder<Instruction>();
+				var reader = new ILReader(buffer);
+
+				while (reader.MoveNext())
 				{
-					return reader.ToImmutableArray();
+					result.Add(reader.Current);
 				}
+
+				return result.ToImmutable();
 			}
 			catch (ILException)
 			{
@@ -105,81 +112,99 @@ namespace MethodCheck.Parsing
 			}
 		}
 
-		static ImmutableArray<MethodDataSection> ExtractDataSections(byte[] blob, int headerLength, int codeSize)
+		static ImmutableArray<MethodDataSection> CreateSections(ReadOnlySpan<byte> buffer)
 		{
+			var start = 0;
 			var builder = ImmutableArray.CreateBuilder<MethodDataSection>();
-			ReadDataSection(builder, blob, (headerLength + codeSize + 3) & ~3);
+
+			while (start < buffer.Length)
+			{
+				var flags = buffer[start];
+				int dataSize;
+
+				if ((flags & CorILMethod_Sect_FatFormat) == 0)
+				{
+					dataSize = buffer[start + 1];
+				}
+				else
+				{
+					dataSize = MemoryMarshal.Read<int>(buffer) >> 8;
+				}
+
+				builder.Add(CreateSection(buffer.Slice(start, dataSize)));
+
+				if ((flags & CorILMethod_MoreSects) == 0)
+				{
+					break;
+				}
+
+				start += dataSize;
+			}
+
 			return builder.ToImmutable();
 		}
 
-		static void ReadDataSection(ImmutableArray<MethodDataSection>.Builder builder, byte[] blob, int start)
+		static MethodDataSection CreateSection(ReadOnlySpan<byte> sectionBuffer)
 		{
-			switch (blob[start] & 0x7F)
+			switch (sectionBuffer[0] & 0x7F)
 			{
 				case CorILMethod_Sect_EHTable:
-					ReadSmallExceptionSection(builder, blob, start);
-					return;
+					{
+						var clauses = MemoryMarshal.Cast<byte, SmallExceptionClause>(sectionBuffer.Slice(4));
+						return new MethodDataSection(CreateHandlers(clauses));
+					}
 
 				case CorILMethod_Sect_EHTable | CorILMethod_Sect_FatFormat:
-					ReadFatExecptionSection(builder, blob, start);
-					return;
+					{
+						var clauses = MemoryMarshal.Cast<byte, FatExceptionClause>(sectionBuffer.Slice(4));
+						return new MethodDataSection(CreateHandlers(clauses));
+					}
+
+				default:
+					return new MethodDataSection(ImmutableArray<ExceptionHandler>.Empty);
 			}
 		}
 
-		static void ReadSmallExceptionSection(ImmutableArray<MethodDataSection>.Builder builder, byte[] blob, int start)
+		static ImmutableArray<ExceptionHandler> CreateHandlers(ReadOnlySpan<FatExceptionClause> clauses)
 		{
-			var flags = blob[start];
-			var dataSize = blob[start + 1];
-			var n = (dataSize - 4) / 12;
+			var handlers = ImmutableArray.CreateBuilder<ExceptionHandler>(clauses.Length);
 
-			var handlers = ImmutableArray.CreateBuilder<ExceptionHandler>(n);
-			start += 4;
-
-			for (var i = 0; i < n; i++)
+			for (var i = 0; i < clauses.Length; i++)
 			{
-				handlers.Add(new ExceptionHandler(
-					(ExceptionHandlingClauseOptions)BitConverter.ToInt16(blob, start),
-					new Range(BitConverter.ToInt16(blob, start + 2), blob[start + 4]),
-					new Range(BitConverter.ToInt16(blob, start + 5), blob[start + 7]),
-					BitConverter.ToInt32(blob, start + 8)));
-
-				start += 12;
+				handlers.Add(CreateHandler(clauses[i]));
 			}
 
-			builder.Add(new MethodDataSection(handlers.MoveToImmutable()));
-
-			if ((flags & CorILMethod_MoreSects) != 0)
-			{
-				ReadDataSection(builder, blob, start);
-			}
+			return handlers.MoveToImmutable();
 		}
 
-		static void ReadFatExecptionSection(ImmutableArray<MethodDataSection>.Builder builder, byte[] blob, int start)
+		static ImmutableArray<ExceptionHandler> CreateHandlers(ReadOnlySpan<SmallExceptionClause> clauses)
 		{
-			var flags = blob[start];
-			var dataSize = BitConverter.ToInt32(blob, start) >> 8;
-			var n = (dataSize - 4) / 24;
+			var handlers = ImmutableArray.CreateBuilder<ExceptionHandler>(clauses.Length);
 
-			var handlers = ImmutableArray.CreateBuilder<ExceptionHandler>(n);
-			start += 4;
-
-			for (var i = 0; i < n; i++)
+			for (var i = 0; i < clauses.Length; i++)
 			{
-				handlers.Add(new ExceptionHandler(
-					(ExceptionHandlingClauseOptions)BitConverter.ToInt32(blob, start),
-					new Range(BitConverter.ToInt32(blob, start + 4), BitConverter.ToInt32(blob, start + 8)),
-					new Range(BitConverter.ToInt32(blob, start + 12), BitConverter.ToInt32(blob, start + 16)),
-					BitConverter.ToInt32(blob, start + 20)));
-
-				start += 24;
+				handlers.Add(CreateHandler(clauses[i]));
 			}
 
-			builder.Add(new MethodDataSection(handlers.MoveToImmutable()));
+			return handlers.MoveToImmutable();
+		}
 
-			if ((flags & CorILMethod_MoreSects) != 0)
-			{
-				ReadDataSection(builder, blob, start);
-			}
+		static ExceptionHandler CreateHandler(in FatExceptionClause clause)
+		{
+			return new ExceptionHandler(
+				(ExceptionHandlingClauseOptions)clause.Flags,
+				new Range(clause.TryOffset, clause.TryLength),
+				new Range(clause.HandlerOffset, clause.HandlerLength),
+				clause.FilterOrType);
+		}
+
+		static ExceptionHandler CreateHandler(in SmallExceptionClause clause)
+		{
+			return new ExceptionHandler(
+				(ExceptionHandlingClauseOptions)clause.Flags,
+				new Range(clause.TryOffset, clause.TryLength),
+				new Range(clause.HandlerOffset, clause.HandlerLength),
+				clause.FilterOrType);
 		}
 
 		const int CorILMethod_FatFormat = 0x03;
@@ -191,5 +216,36 @@ namespace MethodCheck.Parsing
 		const int CorILMethod_Sect_OptILTable = 0x02;
 		const int CorILMethod_Sect_FatFormat = 0x40;
 		const int CorILMethod_Sect_MoreSects = 0x80;
+
+		[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+		struct FatMethodHeader
+		{
+			public ushort FlagsAndSize;
+			public ushort MaxStack;
+			public int CodeSize;
+			public int LocalVarSigTok;
+		}
+
+		[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
+		struct FatExceptionClause
+		{
+			public int Flags;
+			public int TryOffset;
+			public int TryLength;
+			public int HandlerOffset;
+			public int HandlerLength;
+			public int FilterOrType;
+		}
+
+		[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+		struct SmallExceptionClause
+		{
+			public ushort Flags;
+			public ushort TryOffset;
+			public byte TryLength;
+			public ushort HandlerOffset;
+			public byte HandlerLength;
+			public int FilterOrType;
+		}
 	}
 }

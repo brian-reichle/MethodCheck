@@ -7,7 +7,7 @@ namespace MethodCheck
 {
 	static class BinaryProcessor
 	{
-		public static byte[] Parse(string text)
+		public static byte[] Parse(ReadOnlySpan<char> text)
 		{
 			var index = 0;
 			var buffer = new List<byte>();
@@ -105,7 +105,7 @@ namespace MethodCheck
 			return buffer.ToArray();
 		}
 
-		public static string Format(byte[] blob)
+		public static string Format(ReadOnlySpan<byte> blob)
 		{
 			var builder = new StringBuilder();
 

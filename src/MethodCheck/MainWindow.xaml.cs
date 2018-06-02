@@ -59,13 +59,13 @@ namespace MethodCheck
 
 		void DoRun()
 		{
-			var blob = BinaryProcessor.Parse(BytesTextBox.Text);
+			var buffer = BinaryProcessor.Parse(BytesTextBox.Text.AsSpan());
 
-			if (blob != null)
+			if (buffer != null)
 			{
-				BytesTextBox.Text = BinaryProcessor.Format(blob);
+				BytesTextBox.Text = BinaryProcessor.Format(buffer);
 
-				var data = Parse(blob);
+				var data = Parse(buffer);
 
 				if (data != null)
 				{
@@ -74,15 +74,15 @@ namespace MethodCheck
 			}
 		}
 
-		MethodData Parse(byte[] blob)
+		MethodData Parse(ReadOnlySpan<byte> buffer)
 		{
 			if (SourceTypeIL.IsChecked == true)
 			{
-				return MethodParser.ParseIL(blob);
+				return MethodParser.ParseIL(buffer);
 			}
 			else if (SourceTypeBody.IsChecked == true)
 			{
-				return MethodParser.ParseBody(blob);
+				return MethodParser.ParseBody(buffer);
 			}
 			else
 			{

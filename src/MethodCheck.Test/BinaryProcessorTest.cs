@@ -10,28 +10,28 @@ namespace MethodCheck.Test
 		[Test]
 		public void ParseEmpty()
 		{
-			var blob = BinaryProcessor.Parse(string.Empty);
+			var blob = BinaryProcessor.Parse(string.Empty.AsSpan());
 			Assert.That(blob, Is.Empty);
 		}
 
 		[Test]
 		public void Parse()
 		{
-			var blob = BinaryProcessor.Parse("42 51 0A // 05\r\n\r\n54");
+			var blob = BinaryProcessor.Parse("42 51 0A // 05\r\n\r\n54".AsSpan());
 			Assert.That(blob, Is.EqualTo(new byte[] { 0x42, 0x51, 0x0A, 0x54 }));
 		}
 
 		[Test]
 		public void ParseHalfByte()
 		{
-			var blob = BinaryProcessor.Parse("4");
+			var blob = BinaryProcessor.Parse("4".AsSpan());
 			Assert.That(blob, Is.EqualTo(new byte[] { 0x40 }));
 		}
 
 		[Test]
 		public void ParseComments()
 		{
-			var blob = BinaryProcessor.Parse("42 51 0A\r\n\r\n54");
+			var blob = BinaryProcessor.Parse("42 51 0A\r\n\r\n54".AsSpan());
 			Assert.That(blob, Is.EqualTo(new byte[] { 0x42, 0x51, 0x0A, 0x54 }));
 		}
 

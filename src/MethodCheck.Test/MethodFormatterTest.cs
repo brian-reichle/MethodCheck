@@ -21,7 +21,7 @@ namespace MethodCheck.Test
 			Assert.That(match.Success, Is.True);
 
 			var group = match.Groups["splitter"];
-			var blob = BinaryProcessor.Parse(source.Substring(0, group.Index));
+			var blob = BinaryProcessor.Parse(source.AsSpan(0, group.Index));
 
 			MethodData data;
 
