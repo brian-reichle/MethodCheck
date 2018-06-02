@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace MethodCheck.Data
 {
-	struct MetadataToken : IEquatable<MetadataToken>
+	readonly struct MetadataToken : IEquatable<MetadataToken>
 	{
 		public MetadataToken(int token)
 		{

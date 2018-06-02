@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace MethodCheck.Data
 {
-	struct Label : IEquatable<Label>, IComparable<Label>
+	readonly struct Label : IEquatable<Label>, IComparable<Label>
 	{
 		public Label(int offset)
 		{

@@ -3,7 +3,7 @@ using System;
 
 namespace MethodCheck.Data
 {
-	struct Range : IEquatable<Range>
+	readonly struct Range : IEquatable<Range>
 	{
 		public Range(Label offset, int length)
 		{
