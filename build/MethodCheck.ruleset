@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="MethodCheck" ToolsVersion="14.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Include Path="basicdesignguidelinerules.ruleset" Action="Default" />
@@ -60,12 +60,17 @@
     <Rule Id="WTG1010" Action="Warning" />
     <Rule Id="WTG1011" Action="Warning" />
     <Rule Id="WTG1012" Action="Warning" />
+
     <Rule Id="WTG3001" Action="Warning" />
     <Rule Id="WTG3002" Action="Warning" />
     <Rule Id="WTG3003" Action="Warning" />
+    <Rule Id="WTG3004" Action="Warning" />
+    <Rule Id="WTG3005" Action="Warning" />
+    <Rule Id="WTG3006" Action="Warning" />
+    <Rule Id="WTG3007" Action="Warning" />
+
     <Rule Id="WTG3101" Action="Warning" />
     <Rule Id="WTG3102" Action="Warning" />
     <Rule Id="WTG3103" Action="Warning" />
-    <Rule Id="WTG3004" Action="Warning" />
   </Rules>
 </RuleSet>
