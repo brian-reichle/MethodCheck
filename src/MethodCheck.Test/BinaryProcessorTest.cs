@@ -17,7 +17,7 @@ namespace MethodCheck.Test
 		[Test]
 		public void Parse()
 		{
-			var blob = BinaryProcessor.Parse("42 51 0A // 05\r\n\r\n54".AsSpan());
+			var blob = BinaryProcessor.Parse("42 51 0A\r\n\r\n54".AsSpan());
 			Assert.That(blob, Is.EqualTo(new byte[] { 0x42, 0x51, 0x0A, 0x54 }));
 		}
 
@@ -31,7 +31,7 @@ namespace MethodCheck.Test
 		[Test]
 		public void ParseComments()
 		{
-			var blob = BinaryProcessor.Parse("42 51 0A\r\n\r\n54".AsSpan());
+			var blob = BinaryProcessor.Parse("42 51 0A // 05\r\n\r\n54".AsSpan());
 			Assert.That(blob, Is.EqualTo(new byte[] { 0x42, 0x51, 0x0A, 0x54 }));
 		}
 
