@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace MethodCheck.Data
+namespace MethodCheck.Core.Data
 {
 	[Serializable]
 	public class ILException : Exception

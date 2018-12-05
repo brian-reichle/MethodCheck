@@ -1,8 +1,8 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System.Reflection.Emit;
-using MethodCheck.Data;
+using MethodCheck.Core.Data;
 
-namespace MethodCheck.Parsing
+namespace MethodCheck.Core.Parsing
 {
 	ref partial struct ILReader
 	{

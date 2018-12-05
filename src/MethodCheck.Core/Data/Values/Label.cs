@@ -2,9 +2,9 @@
 using System;
 using System.Diagnostics;
 
-namespace MethodCheck.Data
+namespace MethodCheck.Core.Data
 {
-	readonly struct Label : IEquatable<Label>, IComparable<Label>
+	public readonly struct Label : IEquatable<Label>, IComparable<Label>
 	{
 		public Label(int offset)
 		{

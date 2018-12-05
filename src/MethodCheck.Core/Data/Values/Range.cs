@@ -1,9 +1,9 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 
-namespace MethodCheck.Data
+namespace MethodCheck.Core.Data
 {
-	readonly struct Range : IEquatable<Range>
+	public readonly struct Range : IEquatable<Range>
 	{
 		public Range(Label offset, int length)
 		{

@@ -3,12 +3,12 @@ using System;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Text;
-using MethodCheck.Data;
+using MethodCheck.Core.Data;
 using FlowControl = System.Reflection.Emit.FlowControl;
 
-namespace MethodCheck
+namespace MethodCheck.Core
 {
-	static class MethodFormatter
+	public static class MethodFormatter
 	{
 		public static string Format(MethodData data)
 		{

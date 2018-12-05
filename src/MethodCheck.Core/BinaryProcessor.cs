@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MethodCheck
 {
-	static class BinaryProcessor
+	public static class BinaryProcessor
 	{
 		public static byte[] Parse(ReadOnlySpan<char> text)
 		{

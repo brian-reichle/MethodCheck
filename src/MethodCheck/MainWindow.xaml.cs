@@ -2,8 +2,9 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-using MethodCheck.Data;
-using MethodCheck.Parsing;
+using MethodCheck.Core;
+using MethodCheck.Core.Data;
+using MethodCheck.Core.Parsing;
 
 namespace MethodCheck
 {

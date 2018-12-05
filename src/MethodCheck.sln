@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck", "MethodCheck\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck.Test", "MethodCheck.Test\MethodCheck.Test.csproj", "{97C5075D-94ED-4185-BB87-ADEB0AE63029}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck.Core", "MethodCheck.Core\MethodCheck.Core.csproj", "{14A18414-199A-4062-B210-F25289E5D228}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{97C5075D-94ED-4185-BB87-ADEB0AE63029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97C5075D-94ED-4185-BB87-ADEB0AE63029}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97C5075D-94ED-4185-BB87-ADEB0AE63029}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14A18414-199A-4062-B210-F25289E5D228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14A18414-199A-4062-B210-F25289E5D228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14A18414-199A-4062-B210-F25289E5D228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14A18414-199A-4062-B210-F25289E5D228}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

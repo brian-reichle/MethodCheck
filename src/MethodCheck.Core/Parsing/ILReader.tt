@@ -38,9 +38,9 @@ var doubleByteOpCodes = Enumerable.ToArray(
 	select g);
 #>
 using System.Reflection.Emit;
-using MethodCheck.Data;
+using MethodCheck.Core.Data;
 
-namespace MethodCheck.Parsing
+namespace MethodCheck.Core.Parsing
 {
 	ref partial struct ILReader
 	{

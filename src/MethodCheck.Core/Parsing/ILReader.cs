@@ -3,12 +3,14 @@ using System;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using MethodCheck.Data;
+using MethodCheck.Core.Data;
 using OpCode = System.Reflection.Emit.OpCode;
 
-namespace MethodCheck.Parsing
+namespace MethodCheck.Core.Parsing
 {
-	ref partial struct ILReader
+#pragma warning disable SA1206 // Declaration keywords must follow order
+	public ref partial struct ILReader
+#pragma warning restore SA1206 // Declaration keywords must follow order
 	{
 		public ILReader(ReadOnlySpan<byte> buffer)
 		{

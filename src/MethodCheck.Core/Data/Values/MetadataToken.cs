@@ -2,9 +2,9 @@
 using System;
 using System.Diagnostics;
 
-namespace MethodCheck.Data
+namespace MethodCheck.Core.Data
 {
-	readonly struct MetadataToken : IEquatable<MetadataToken>
+	public readonly struct MetadataToken : IEquatable<MetadataToken>
 	{
 		public MetadataToken(int token)
 		{

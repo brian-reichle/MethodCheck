@@ -3,11 +3,11 @@ using System;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using MethodCheck.Data;
+using MethodCheck.Core.Data;
 
-namespace MethodCheck.Parsing
+namespace MethodCheck.Core.Parsing
 {
-	static class MethodParser
+	public static class MethodParser
 	{
 		public static MethodData ParseBody(ReadOnlySpan<byte> buffer)
 		{

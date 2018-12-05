@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MethodCheck.Data;
-using MethodCheck.Parsing;
+using MethodCheck.Core;
+using MethodCheck.Core.Data;
+using MethodCheck.Core.Parsing;
 using NUnit.Framework;
 
 namespace MethodCheck.Test

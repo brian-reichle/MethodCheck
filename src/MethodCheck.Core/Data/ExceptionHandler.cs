@@ -1,9 +1,9 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System.Reflection;
 
-namespace MethodCheck.Data
+namespace MethodCheck.Core.Data
 {
-	sealed class ExceptionHandler
+	public sealed class ExceptionHandler
 	{
 		public ExceptionHandler(ExceptionHandlingClauseOptions type, Range tryRange, Range handlerRange, int filterOrType)
 		{
