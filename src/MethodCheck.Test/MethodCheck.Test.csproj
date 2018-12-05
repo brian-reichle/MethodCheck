@@ -1,89 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{97C5075D-94ED-4185-BB87-ADEB0AE63029}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MethodCheck.Test</RootNamespace>
-    <AssemblyName>MethodCheck.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <TargetFramework>net471</TargetFramework>
     <CodeAnalysisRuleSet>..\..\build\MethodCheck.Test.ruleset</CodeAnalysisRuleSet>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="BinaryProcessorTest.cs" />
-    <Compile Include="LabelTest.cs" />
-    <Compile Include="MetadataTokenTest.cs" />
-    <Compile Include="MethodFormatterTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MethodCheck.Core\MethodCheck.Core.csproj">
-      <Project>{14a18414-199a-4062-b210-f25289e5d228}</Project>
-      <Name>MethodCheck.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\Body\Simple.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\IL\Minimal.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\IL\Branch.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\IL\Tailcall.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\Body\FatTryCatch.txt" />
-    <EmbeddedResource Include="Samples\Body\FatTryFault.txt" />
-    <EmbeddedResource Include="Samples\Body\FatTryFilter.txt" />
-    <EmbeddedResource Include="Samples\Body\FatTryFinally.txt" />
-    <EmbeddedResource Include="Samples\Body\SmallTryCatch.txt" />
-    <EmbeddedResource Include="Samples\Body\SmallTryFault.txt" />
-    <EmbeddedResource Include="Samples\Body\SmallTryFilter.txt" />
-    <EmbeddedResource Include="Samples\Body\SmallTryFinally.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NUnit">
-      <Version>3.10.1</Version>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers">
-      <Version>1.0.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.Immutable">
-      <Version>1.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Memory">
-      <Version>4.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="WTG.Analyzers">
-      <Version>2.0.6</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
+    <PackageReference Include="System.Memory" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
+    <PackageReference Include="WTG.Analyzers" Version="2.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <EmbeddedResource Include="Samples\**\*.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MethodCheck.Core\MethodCheck.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
 </Project>
