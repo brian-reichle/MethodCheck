@@ -3,9 +3,7 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-[assembly: AssemblyTitle("MethodCheck")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 
 [assembly: NeutralResourcesLanguage("en-AU")]
 
