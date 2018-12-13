@@ -223,7 +223,6 @@ namespace MethodCheck.Core.Parsing
 		const int CorILMethod_InitLocals = 0x10;
 
 		const int CorILMethod_Sect_EHTable = 0x01;
-		const int CorILMethod_Sect_OptILTable = 0x02;
 		const int CorILMethod_Sect_FatFormat = 0x40;
 		const int CorILMethod_Sect_MoreSects = 0x80;
 

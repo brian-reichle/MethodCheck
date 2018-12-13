@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace MethodCheck
@@ -127,7 +128,7 @@ namespace MethodCheck
 					}
 				}
 
-				builder.Append(blob[i].ToString("X2"));
+				builder.Append(blob[i].ToString("X2", CultureInfo.InvariantCulture));
 			}
 
 			return builder.ToString();

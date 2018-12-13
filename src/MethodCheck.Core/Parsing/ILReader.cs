@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using MethodCheck.Core.Data;
 using OpCode = System.Reflection.Emit.OpCode;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 namespace MethodCheck.Core.Parsing
 {
 #pragma warning disable SA1206 // Declaration keywords must follow order
@@ -97,3 +99,5 @@ namespace MethodCheck.Core.Parsing
 		int _offset;
 	}
 }
+
+#pragma warning restore CA1815 // Override equals and operator equals on value types

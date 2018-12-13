@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MethodCheck.Core.Data
 {
@@ -15,7 +16,7 @@ namespace MethodCheck.Core.Data
 		public bool Equals(Label other) => _offset == other._offset;
 		public int CompareTo(Label other) => _offset.CompareTo(other._offset);
 		public override int GetHashCode() => _offset;
-		public override string ToString() => "IL_" + _offset.ToString("X4");
+		public override string ToString() => "IL_" + _offset.ToString("X4", CultureInfo.InvariantCulture);
 
 		public static explicit operator int(Label label) => label._offset;
 		public static implicit operator Label(int offset) => new Label(offset);

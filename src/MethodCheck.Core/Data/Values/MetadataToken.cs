@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MethodCheck.Core.Data
 {
@@ -14,7 +15,7 @@ namespace MethodCheck.Core.Data
 		public override bool Equals(object obj) => obj is MetadataToken && Equals((MetadataToken)obj);
 		public bool Equals(MetadataToken other) => other._token == _token;
 		public override int GetHashCode() => _token;
-		public override string ToString() => _token.ToString("X8");
+		public override string ToString() => _token.ToString("X8", CultureInfo.InvariantCulture);
 
 		public static bool operator ==(MetadataToken token1, MetadataToken token2) => token1._token == token2._token;
 		public static bool operator !=(MetadataToken token1, MetadataToken token2) => token1._token != token2._token;

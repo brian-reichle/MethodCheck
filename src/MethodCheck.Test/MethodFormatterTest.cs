@@ -26,11 +26,11 @@ namespace MethodCheck.Test
 
 			MethodData data;
 
-			if (name.StartsWith("Body."))
+			if (name.StartsWith("Body.", StringComparison.InvariantCulture))
 			{
 				data = MethodParser.ParseBody(blob);
 			}
-			else if (name.StartsWith("IL."))
+			else if (name.StartsWith("IL.", StringComparison.InvariantCulture))
 			{
 				data = MethodParser.ParseIL(blob);
 			}
@@ -53,7 +53,7 @@ namespace MethodCheck.Test
 			{
 				return
 					from resource in typeof(MethodFormatterTest).Assembly.GetManifestResourceNames()
-					where resource.StartsWith(ResourcePrefix)
+					where resource.StartsWith(ResourcePrefix, StringComparison.InvariantCulture)
 					select resource.Substring(ResourcePrefix.Length);
 			}
 		}
