@@ -143,7 +143,7 @@ namespace MethodCheck.Core.Parsing
 
 				builder.Add(CreateSection(buffer.Slice(start, dataSize)));
 
-				if ((flags & CorILMethod_MoreSects) == 0)
+				if ((flags & CorILMethod_Sect_MoreSects) == 0)
 				{
 					break;
 				}
