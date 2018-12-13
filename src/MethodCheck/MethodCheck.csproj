@@ -26,19 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Parsing\ILReader.g.cs">
-      <DependentUpon>ILReader.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Parsing\ILReader.tt">
-      <LastGenOutput>ILReader.g.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
