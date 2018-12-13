@@ -9,12 +9,14 @@ namespace MethodCheck.Core.Data
 			MetadataToken localsToken,
 			int maxStack,
 			int codeSize,
+			MethodDataFlags flags,
 			ImmutableArray<Instruction> instructions,
 			ImmutableArray<MethodDataSection> dataSections)
 		{
 			LocalsToken = localsToken;
 			MaxStack = maxStack;
 			CodeSize = codeSize;
+			Flags = flags;
 			Instructions = instructions;
 			DataSections = dataSections;
 		}
@@ -22,6 +24,7 @@ namespace MethodCheck.Core.Data
 		public MetadataToken LocalsToken { get; }
 		public int MaxStack { get; }
 		public int CodeSize { get; }
+		public MethodDataFlags Flags { get; }
 		public ImmutableArray<Instruction> Instructions { get; }
 		public ImmutableArray<MethodDataSection> DataSections { get; }
 	}

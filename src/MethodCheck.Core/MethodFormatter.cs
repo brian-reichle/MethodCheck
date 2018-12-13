@@ -191,6 +191,12 @@ namespace MethodCheck.Core
 			if (data.LocalsToken != 0)
 			{
 				builder.Append(".locals ");
+
+				if ((data.Flags & MethodDataFlags.InitFields) != 0)
+				{
+					builder.Append("init ");
+				}
+
 				builder.Append(data.LocalsToken);
 				builder.AppendLine();
 			}

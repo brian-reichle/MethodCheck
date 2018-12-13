@@ -1,0 +1,14 @@
+//[Header]
+13 30          // CorILMethod_FatFormat, CorILMethod_InitLocals, header size: 3*4 bytes
+01 00          // max stack size: 1
+01 00 00 00    // code size: 1
+0A 00 00 11    // locals signature token: 1100000A
+
+2A             // ret
+
+====
+.maxstack 1
+.locals init 1100000A
+// code size: 1
+  ret
+

@@ -45,6 +45,7 @@ namespace MethodCheck.Core.Parsing
 				default,
 				0,
 				0,
+				MethodDataFlags.None,
 				ReadIL(buffer),
 				ImmutableArray<MethodDataSection>.Empty);
 		}
@@ -57,6 +58,7 @@ namespace MethodCheck.Core.Parsing
 				default,
 				8,
 				codeSize,
+				MethodDataFlags.None,
 				ReadIL(buffer.Slice(1, codeSize)),
 				ImmutableArray<MethodDataSection>.Empty);
 		}
@@ -79,10 +81,18 @@ namespace MethodCheck.Core.Parsing
 				dataSections = ImmutableArray<MethodDataSection>.Empty;
 			}
 
+			var flags = MethodDataFlags.None;
+
+			if ((buffer[0] & CorILMethod_InitLocals) != 0)
+			{
+				flags = MethodDataFlags.InitFields;
+			}
+
 			return new MethodData(
 				header.LocalVarSigTok,
 				header.MaxStack,
 				header.CodeSize,
+				flags,
 				ReadIL(buffer.Slice(headerLength, header.CodeSize)),
 				dataSections);
 		}
