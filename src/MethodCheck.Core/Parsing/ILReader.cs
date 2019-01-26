@@ -40,7 +40,7 @@ namespace MethodCheck.Core.Parsing
 		}
 
 		Instruction ReadInlineNoneInstruction(OpCode opcode) => CreateInstruction(opcode.Size, opcode, null);
-		Instruction ReadShortInlineVarInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 1, opcode, Read<short>(_offset + opcode.Size));
+		Instruction ReadShortInlineVarInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 1, opcode, Read<byte>(_offset + opcode.Size));
 		Instruction ReadShortInlineIInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 1, opcode, (int)Read<sbyte>(_offset + opcode.Size));
 		Instruction ReadInlineIInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 4, opcode, Read<int>(_offset + opcode.Size));
 		Instruction ReadInlineI8Instruction(OpCode opcode) => CreateInstruction(opcode.Size + 8, opcode, Read<long>(_offset + opcode.Size));

@@ -1,0 +1,19 @@
+//[IL]
+FE 0C 01 00 // ldloc 1
+11 02       // ldloc.s 2
+11 80       // ldloc.s 128
+06          // ldloc.0
+07          // ldloc.1
+08          // ldloc.2
+09          // ldloc.3
+2A          // ret
+====
+  ldloc           1
+  ldloc.s         2
+  ldloc.s         128
+  ldloc.0
+  ldloc.1
+  ldloc.2
+  ldloc.3
+  ret
+
