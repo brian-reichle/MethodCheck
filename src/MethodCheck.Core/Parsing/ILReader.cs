@@ -47,7 +47,7 @@ namespace MethodCheck.Core.Parsing
 		Instruction ReadShortInlineRInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 4, opcode, Read<float>(_offset + opcode.Size));
 		Instruction ReadInlineRInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 8, opcode, Read<double>(_offset + opcode.Size));
 		Instruction ReadInlineTokInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 4, opcode, new MetadataToken(Read<int>(_offset + opcode.Size)));
-		Instruction ReadInlineVarInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 2, opcode, Read<short>(_offset + opcode.Size));
+		Instruction ReadInlineVarInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 2, opcode, Read<ushort>(_offset + opcode.Size));
 
 		Instruction ReadShortInlineBrTargetInstruction(OpCode opcode)
 		{

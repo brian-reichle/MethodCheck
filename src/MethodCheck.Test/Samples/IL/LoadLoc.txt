@@ -1,5 +1,6 @@
 //[IL]
 FE 0C 01 00 // ldloc 1
+FE 0C 00 80 // ldloc 32768
 11 02       // ldloc.s 2
 11 80       // ldloc.s 128
 06          // ldloc.0
@@ -9,6 +10,7 @@ FE 0C 01 00 // ldloc 1
 2A          // ret
 ====
   ldloc           1
+  ldloc           32768
   ldloc.s         2
   ldloc.s         128
   ldloc.0
