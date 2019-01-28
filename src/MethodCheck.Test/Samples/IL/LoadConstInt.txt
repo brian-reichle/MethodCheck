@@ -1,0 +1,19 @@
+//[IL]
+20 01 00 00 00             // ldc.i4 1
+21 02 00 00 00 00 00 00 00 // ldc.i8 2
+1F 03                      // ldc.i4.s 3
+1F FC                      // ldc.i4.s -3
+16                         // ldc.i4.0
+17                         // ldc.i4.1
+15                         // ldc.i4.m1
+2A                         // ret
+====
+  ldc.i4          1
+  ldc.i8          2
+  ldc.i4.s        3
+  ldc.i4.s        -4
+  ldc.i4.0
+  ldc.i4.1
+  ldc.i4.m1
+  ret
+
