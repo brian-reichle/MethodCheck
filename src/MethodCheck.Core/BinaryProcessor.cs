@@ -14,7 +14,6 @@ namespace MethodCheck
 			var buffer = new List<byte>();
 			var halfByte = false;
 			var readingComment = false;
-			var sol = true;
 			byte tmp = 0;
 
 			while (index < text.Length)
@@ -25,39 +24,8 @@ namespace MethodCheck
 				if (c == '\r' || c == '\n')
 				{
 					readingComment = false;
-					sol = true;
 					continue;
 				}
-				else if (c == '-' && sol)
-				{
-					var newLine = false;
-
-					while (index < text.Length && text[index] == '-')
-					{
-						index++;
-					}
-
-					if (index < text.Length && text[index] == '\r')
-					{
-						newLine = true;
-						index++;
-					}
-
-					if (index < text.Length && text[index] == '\n')
-					{
-						newLine = true;
-						index++;
-					}
-
-					if (!newLine)
-					{
-						throw new ArgumentException();
-					}
-
-					break;
-				}
-
-				sol = false;
 
 				if (char.IsWhiteSpace(c) || readingComment)
 				{
