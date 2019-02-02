@@ -202,6 +202,11 @@ namespace MethodCheck.Core.Parsing
 				case 0xDF: return ReadInlineNoneInstruction(OpCodes.Stind_I);
 				case 0xE0: return ReadInlineNoneInstruction(OpCodes.Conv_U);
 				case 0xFE:
+					if (_offset + 1 >= _buffer.Length)
+					{
+						return InvalidInstruction(1);
+					}
+
 					switch (_buffer[_offset + 1])
 					{
 						case 0x00: return ReadInlineNoneInstruction(OpCodes.Arglist);
@@ -232,10 +237,10 @@ namespace MethodCheck.Core.Parsing
 						case 0x1D: return ReadInlineNoneInstruction(OpCodes.Refanytype);
 						case 0x1E: return ReadInlineNoneInstruction(OpCodes.Readonly);
 					}
-					break;
+					return InvalidInstruction(2);
 			}
 
-			throw new ILException();
+			return InvalidInstruction(1);
 		}
 	}
 }

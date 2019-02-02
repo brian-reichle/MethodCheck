@@ -1,0 +1,4 @@
+//[IL]
+FE          // first byte of a two-byte opcode
+====
+  ??

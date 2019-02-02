@@ -35,25 +35,35 @@ namespace MethodCheck.Core
 				}
 
 				builder.Append("  ");
-				builder.Append(instruction.OpCode.Name);
 
-				if (instruction.Argument != null)
+				switch (instruction.Kind)
 				{
-					builder.Append(' ', Instruction.MaxMnemonicLength + 1 - instruction.OpCode.Name.Length);
-					builder.Append(' ');
-					WriteArgument(builder, instruction);
+					case InstructionKind.Invalid:
+						builder.Append("??");
+						break;
+
+					case InstructionKind.OpCode:
+						builder.Append(instruction.OpCode.Name);
+
+						if (instruction.Argument != null)
+						{
+							builder.Append(' ', Instruction.MaxMnemonicLength + 1 - instruction.OpCode.Name.Length);
+							builder.Append(' ');
+							WriteArgument(builder, instruction);
+						}
+
+						switch (instruction.OpCode.FlowControl)
+						{
+							case FlowControl.Branch:
+							case FlowControl.Return:
+							case FlowControl.Throw:
+								builder.AppendLine();
+								break;
+						}
+						break;
 				}
 
 				builder.AppendLine();
-
-				switch (instruction.OpCode.FlowControl)
-				{
-					case FlowControl.Branch:
-					case FlowControl.Return:
-					case FlowControl.Throw:
-						builder.AppendLine();
-						break;
-				}
 			}
 		}
 
@@ -106,6 +116,12 @@ namespace MethodCheck.Core
 
 		static void WriteArgument(StringBuilder builder, Instruction instruction)
 		{
+			if (instruction.Argument == IncompleteArgument.Value)
+			{
+				builder.Append("??");
+				return;
+			}
+
 			switch (instruction.Argument)
 			{
 				case Label label:

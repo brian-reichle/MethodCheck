@@ -25,7 +25,7 @@ namespace MethodCheck.Core.Parsing
 
 		public bool MoveNext()
 		{
-			if (_offset == _buffer.Length)
+			if (_offset >= _buffer.Length)
 			{
 				Current = null;
 				return false;
@@ -40,59 +40,76 @@ namespace MethodCheck.Core.Parsing
 		}
 
 		Instruction ReadInlineNoneInstruction(OpCode opcode) => CreateInstruction(opcode.Size, opcode, null);
-		Instruction ReadShortInlineVarInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 1, opcode, Read<byte>(_offset + opcode.Size));
-		Instruction ReadShortInlineIInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 1, opcode, (int)Read<sbyte>(_offset + opcode.Size));
-		Instruction ReadInlineIInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 4, opcode, Read<int>(_offset + opcode.Size));
-		Instruction ReadInlineI8Instruction(OpCode opcode) => CreateInstruction(opcode.Size + 8, opcode, Read<long>(_offset + opcode.Size));
-		Instruction ReadShortInlineRInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 4, opcode, Read<float>(_offset + opcode.Size));
-		Instruction ReadInlineRInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 8, opcode, Read<double>(_offset + opcode.Size));
-		Instruction ReadInlineTokInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 4, opcode, new MetadataToken(Read<int>(_offset + opcode.Size)));
-		Instruction ReadInlineVarInstruction(OpCode opcode) => CreateInstruction(opcode.Size + 2, opcode, Read<ushort>(_offset + opcode.Size));
-
-		Instruction ReadShortInlineBrTargetInstruction(OpCode opcode)
-		{
-			var delta = Read<sbyte>(_offset + opcode.Size);
-			var length = opcode.Size + 1;
-			return CreateInstruction(length, opcode, new Label(_offset + length + delta));
-		}
-
-		Instruction ReadInlineBrTargetInstruction(OpCode opcode)
-		{
-			var delta = Read<int>(_offset + opcode.Size);
-			var length = opcode.Size + 4;
-			return CreateInstruction(length, opcode, new Label(_offset + length + delta));
-		}
+		Instruction ReadShortInlineVarInstruction(OpCode opcode) => CreateInstruction<byte>(opcode);
+		Instruction ReadShortInlineIInstruction(OpCode opcode) => CreateInstruction(opcode, (sbyte x, int _) => (int)x);
+		Instruction ReadInlineIInstruction(OpCode opcode) => CreateInstruction<int>(opcode);
+		Instruction ReadInlineI8Instruction(OpCode opcode) => CreateInstruction<long>(opcode);
+		Instruction ReadShortInlineRInstruction(OpCode opcode) => CreateInstruction<float>(opcode);
+		Instruction ReadInlineRInstruction(OpCode opcode) => CreateInstruction<double>(opcode);
+		Instruction ReadInlineTokInstruction(OpCode opcode) => CreateInstruction(opcode, (int x, int _) => new MetadataToken(x));
+		Instruction ReadInlineVarInstruction(OpCode opcode) => CreateInstruction<ushort>(opcode);
+		Instruction InvalidInstruction(int length) => new Instruction(new Range(_offset, length));
+		Instruction ReadShortInlineBrTargetInstruction(OpCode opcode) => CreateInstruction(opcode, (sbyte x, int end) => new Label(end + x));
+		Instruction ReadInlineBrTargetInstruction(OpCode opcode) => CreateInstruction(opcode, (int x, int end) => new Label(end + x));
 
 		Instruction ReadInlineSwitchInstruction(OpCode opcode)
 		{
-			var pos = _offset + opcode.Size;
-			var labelCount = Read<int>(pos);
+			var argStart = _offset + opcode.Size;
 
-			pos += 4;
-			var relativeOffset = pos + labelCount * 4;
-
-			var builder = ImmutableArray.CreateBuilder<Label>(labelCount);
-
-			for (var i = 0; i < labelCount; i++)
+			if (argStart + 4 < _buffer.Length)
 			{
-				builder.Add(relativeOffset + Read<int>(pos));
-				pos += 4;
+				var values = MemoryMarshal.Cast<byte, int>(_buffer.Slice(argStart));
+				var labelCount = values[0];
+
+				if (labelCount + 1 < values.Length)
+				{
+					values = values.Slice(1, labelCount);
+					var relativeOffset = argStart + 4 + labelCount * 4;
+					var argument = CreateLabelList(relativeOffset, values);
+					return CreateInstruction(relativeOffset - _offset, opcode, argument);
+				}
 			}
 
-			return CreateInstruction(pos - _offset, opcode, builder.MoveToImmutable());
+			return CreateInstruction(_buffer.Length - _offset, opcode, IncompleteArgument.Value);
+		}
+
+		Instruction CreateInstruction<T>(OpCode opCode)
+			where T : unmanaged
+			=> CreateInstruction(opCode, (T x, int _) => x);
+
+		Instruction CreateInstruction<TIn, TOut>(OpCode opCode, Func<TIn, int, TOut> converter)
+			where TIn : unmanaged
+		{
+			object value;
+			var length = opCode.Size + Unsafe.SizeOf<TIn>();
+			var end = _offset + length;
+
+			if (end < _buffer.Length)
+			{
+				var rawValue = MemoryMarshal.Read<TIn>(_buffer.Slice(_offset + opCode.Size));
+				value = converter(rawValue, end);
+			}
+			else
+			{
+				value = IncompleteArgument.Value;
+			}
+
+			return CreateInstruction(length, opCode, value);
 		}
 
 		Instruction CreateInstruction(int length, OpCode opcode, object value) => new Instruction(new Range(_offset, length), opcode, value);
 
-		T Read<T>(int offset)
-			where T : unmanaged
+		static ImmutableArray<Label> CreateLabelList(int relativeOffset, ReadOnlySpan<int> offsets)
 		{
-			if (offset + Unsafe.SizeOf<T>() > _buffer.Length)
+			var builder = ImmutableArray.CreateBuilder<Label>(offsets.Length);
+			builder.Count = offsets.Length;
+
+			for (var i = 0; i < offsets.Length; i++)
 			{
-				throw new ILException("Incomplete Argument");
+				builder[i] = new Label(relativeOffset + offsets[i]);
 			}
 
-			return MemoryMarshal.Read<T>(_buffer.Slice(offset));
+			return builder.MoveToImmutable();
 		}
 
 		readonly ReadOnlySpan<byte> _buffer;

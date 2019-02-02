@@ -9,11 +9,19 @@ namespace MethodCheck.Core.Data
 
 		public Instruction(Range range, OpCode opcode, object argument)
 		{
+			Kind = InstructionKind.OpCode;
 			Range = range;
 			OpCode = opcode;
 			Argument = argument;
 		}
 
+		public Instruction(Range range)
+		{
+			Kind = InstructionKind.Invalid;
+			Range = range;
+		}
+
+		public InstructionKind Kind { get; }
 		public Range Range { get; }
 		public OpCode OpCode { get; }
 		public object Argument { get; }

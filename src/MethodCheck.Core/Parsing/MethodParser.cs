@@ -29,9 +29,6 @@ namespace MethodCheck.Core.Parsing
 					return ParseFat(buffer);
 				}
 			}
-			catch (IndexOutOfRangeException)
-			{
-			}
 			catch (ArgumentException)
 			{
 			}
@@ -104,22 +101,15 @@ namespace MethodCheck.Core.Parsing
 				return ImmutableArray<Instruction>.Empty;
 			}
 
-			try
-			{
-				var result = ImmutableArray.CreateBuilder<Instruction>();
-				var reader = new ILReader(buffer);
+			var result = ImmutableArray.CreateBuilder<Instruction>();
+			var reader = new ILReader(buffer);
 
-				while (reader.MoveNext())
-				{
-					result.Add(reader.Current);
-				}
-
-				return result.ToImmutable();
-			}
-			catch (ILException)
+			while (reader.MoveNext())
 			{
-				return ImmutableArray<Instruction>.Empty;
+				result.Add(reader.Current);
 			}
+
+			return result.ToImmutable();
 		}
 
 		static ImmutableArray<MethodDataSection> CreateSections(ReadOnlySpan<byte> buffer)
