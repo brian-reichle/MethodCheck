@@ -10,9 +10,7 @@ using OpCode = System.Reflection.Emit.OpCode;
 
 namespace MethodCheck.Core.Parsing
 {
-#pragma warning disable SA1206 // Declaration keywords must follow order
 	public ref partial struct ILReader
-#pragma warning restore SA1206 // Declaration keywords must follow order
 	{
 		public ILReader(ReadOnlySpan<byte> buffer)
 		{

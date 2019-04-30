@@ -20,6 +20,7 @@
     <Rule Id="CA5122" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA0001" Action="None" />
     <Rule Id="SA1027" Action="None" />
 
     <Rule Id="SA1101" Action="None" />
@@ -48,6 +49,9 @@
     <Rule Id="SA1515" Action="None" />
     <Rule Id="SA1516" Action="None" />
 
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1601" Action="None" />
+    <Rule Id="SA1602" Action="None" />
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1652" Action="None" />
     <Rule Id="SX1309" Action="Warning" />
