@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck", "MethodCheck\MethodCheck.csproj", "{FDA76E88-8EE7-4C75-8213-7C41C32840EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MethodCheck", "MethodCheck\MethodCheck.csproj", "{FDA76E88-8EE7-4C75-8213-7C41C32840EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck.Test", "MethodCheck.Test\MethodCheck.Test.csproj", "{97C5075D-94ED-4185-BB87-ADEB0AE63029}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MethodCheck.Test", "MethodCheck.Test\MethodCheck.Test.csproj", "{97C5075D-94ED-4185-BB87-ADEB0AE63029}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MethodCheck.Core", "MethodCheck.Core\MethodCheck.Core.csproj", "{14A18414-199A-4062-B210-F25289E5D228}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MethodCheck.Core", "MethodCheck.Core\MethodCheck.Core.csproj", "{14A18414-199A-4062-B210-F25289E5D228}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
