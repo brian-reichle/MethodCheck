@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>netcoreapp3.0;net472</TargetFrameworks>
     <CodeAnalysisRuleSet>..\..\build\MethodCheck.Test.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
