@@ -8,7 +8,7 @@ namespace MethodCheck
 {
 	public static class BinaryProcessor
 	{
-		public static byte[] Parse(ReadOnlySpan<char> text)
+		public static byte[]? Parse(ReadOnlySpan<char> text)
 		{
 			var index = 0;
 			var buffer = new List<byte>();

@@ -9,7 +9,7 @@ namespace MethodCheck.Core.Parsing
 {
 	public static class MethodParser
 	{
-		public static MethodData ParseBody(ReadOnlySpan<byte> buffer)
+		public static MethodData? ParseBody(ReadOnlySpan<byte> buffer)
 		{
 			if (buffer.Length == 0)
 			{
@@ -60,7 +60,7 @@ namespace MethodCheck.Core.Parsing
 				ImmutableArray<MethodDataSection>.Empty);
 		}
 
-		static MethodData ParseFat(ReadOnlySpan<byte> buffer)
+		static MethodData? ParseFat(ReadOnlySpan<byte> buffer)
 		{
 			if (buffer.Length < 12) return null;
 			var header = MemoryMarshal.Cast<byte, FatMethodHeader>(buffer)[0];
