@@ -24,7 +24,7 @@ namespace MethodCheck.Test
 			var group = match.Groups["splitter"];
 			var blob = BinaryProcessor.Parse(source.AsSpan(0, group.Index));
 
-			MethodData data;
+			MethodData? data;
 
 			if (name.StartsWith("Body.", StringComparison.InvariantCulture))
 			{
@@ -39,7 +39,7 @@ namespace MethodCheck.Test
 				throw new ArgumentException();
 			}
 
-			var actual = MethodFormatter.Format(data);
+			var actual = data == null ? null : MethodFormatter.Format(data);
 			var expected = source.Substring(group.Index + group.Length);
 
 			Assert.That(actual, Is.EqualTo(expected));
@@ -60,11 +60,9 @@ namespace MethodCheck.Test
 
 		static string Load(string name)
 		{
-			using (var stream = typeof(MethodFormatterTest).Assembly.GetManifestResourceStream(ResourcePrefix + name))
-			using (var reader = new StreamReader(stream))
-			{
-				return reader.ReadToEnd();
-			}
+			using var stream = typeof(MethodFormatterTest).Assembly.GetManifestResourceStream(ResourcePrefix + name);
+			using var reader = new StreamReader(stream);
+			return reader.ReadToEnd();
 		}
 
 		const string ResourcePrefix = "MethodCheck.Test.Samples.";

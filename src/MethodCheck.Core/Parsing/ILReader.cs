@@ -16,7 +16,7 @@ namespace MethodCheck.Core.Parsing
 		{
 			_buffer = buffer;
 			_offset = 0;
-			Current = null;
+			Current = null!;
 		}
 
 		public Instruction Current { get; private set; }
@@ -25,7 +25,7 @@ namespace MethodCheck.Core.Parsing
 		{
 			if (_offset >= _buffer.Length)
 			{
-				Current = null;
+				Current = null!;
 				return false;
 			}
 			else
@@ -77,6 +77,7 @@ namespace MethodCheck.Core.Parsing
 
 		Instruction CreateInstruction<TIn, TOut>(OpCode opCode, Func<TIn, int, TOut> converter)
 			where TIn : unmanaged
+			where TOut : notnull
 		{
 			object value;
 			var length = opCode.Size + Unsafe.SizeOf<TIn>();
@@ -95,7 +96,7 @@ namespace MethodCheck.Core.Parsing
 			return CreateInstruction(length, opCode, value);
 		}
 
-		Instruction CreateInstruction(int length, OpCode opcode, object value) => new Instruction(new Range(_offset, length), opcode, value);
+		Instruction CreateInstruction(int length, OpCode opcode, object? value) => new Instruction(new Range(_offset, length), opcode, value);
 
 		static ImmutableArray<Label> CreateLabelList(int relativeOffset, ReadOnlySpan<int> offsets)
 		{

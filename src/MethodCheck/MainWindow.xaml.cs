@@ -75,7 +75,7 @@ namespace MethodCheck
 			}
 		}
 
-		MethodData Parse(ReadOnlySpan<byte> buffer)
+		MethodData? Parse(ReadOnlySpan<byte> buffer)
 		{
 			if (SourceTypeIL.IsChecked == true)
 			{
