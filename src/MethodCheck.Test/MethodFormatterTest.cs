@@ -60,11 +60,9 @@ namespace MethodCheck.Test
 
 		static string Load(string name)
 		{
-			using (var stream = typeof(MethodFormatterTest).Assembly.GetManifestResourceStream(ResourcePrefix + name))
-			using (var reader = new StreamReader(stream))
-			{
-				return reader.ReadToEnd();
-			}
+			using var stream = typeof(MethodFormatterTest).Assembly.GetManifestResourceStream(ResourcePrefix + name);
+			using var reader = new StreamReader(stream);
+			return reader.ReadToEnd();
 		}
 
 		const string ResourcePrefix = "MethodCheck.Test.Samples.";
