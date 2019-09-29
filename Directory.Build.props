@@ -16,12 +16,17 @@ CS1591 - Missing XML comment.
 		<NoWarn>1591</NoWarn>
 		<LangVersion>8.0</LangVersion>
 		<Nullable>enable</Nullable>
+
 		<Version>0.1.0</Version>
-		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
-		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 		<Authors>Brian Reichle</Authors>
 		<Product>MethodCheck</Product>
 		<Copyright>Copyright (c) Brian Reichle 2015-2019</Copyright>
+
+		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
+		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\MethodCheck.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRuleSet Condition="$(MSBuildProjectFile.Contains('.Test.'))">$(MSBuildThisFileDirectory)build\MethodCheck.Test.ruleset</CodeAnalysisRuleSet>
+
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugSymbols>true</DebugSymbols>
