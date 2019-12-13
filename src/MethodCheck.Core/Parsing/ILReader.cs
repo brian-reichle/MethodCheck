@@ -83,7 +83,7 @@ namespace MethodCheck.Core.Parsing
 			var length = opCode.Size + Unsafe.SizeOf<TIn>();
 			var end = _offset + length;
 
-			if (end < _buffer.Length)
+			if (end <= _buffer.Length)
 			{
 				var rawValue = MemoryMarshal.Read<TIn>(_buffer.Slice(_offset + opCode.Size));
 				value = converter(rawValue, end);
