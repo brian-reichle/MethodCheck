@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace MethodCheck
+namespace MethodCheck.Core
 {
 	public static class BinaryProcessor
 	{
