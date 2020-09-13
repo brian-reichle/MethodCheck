@@ -39,12 +39,12 @@ namespace MethodCheck.Core.Parsing
 
 		Instruction ReadInlineNoneInstruction(OpCode opcode) => CreateInstruction(opcode.Size, opcode, null);
 		Instruction ReadShortInlineVarInstruction(OpCode opcode) => CreateInstruction<byte>(opcode);
-		Instruction ReadShortInlineIInstruction(OpCode opcode) => CreateInstruction(opcode, (sbyte x, int _) => (int)x);
+		Instruction ReadShortInlineIInstruction(OpCode opcode) => CreateInstruction(opcode, (sbyte x, int end) => (int)x);
 		Instruction ReadInlineIInstruction(OpCode opcode) => CreateInstruction<int>(opcode);
 		Instruction ReadInlineI8Instruction(OpCode opcode) => CreateInstruction<long>(opcode);
 		Instruction ReadShortInlineRInstruction(OpCode opcode) => CreateInstruction<float>(opcode);
 		Instruction ReadInlineRInstruction(OpCode opcode) => CreateInstruction<double>(opcode);
-		Instruction ReadInlineTokInstruction(OpCode opcode) => CreateInstruction(opcode, (int x, int _) => new MetadataToken(x));
+		Instruction ReadInlineTokInstruction(OpCode opcode) => CreateInstruction(opcode, (int x, int end) => new MetadataToken(x));
 		Instruction ReadInlineVarInstruction(OpCode opcode) => CreateInstruction<ushort>(opcode);
 		Instruction InvalidInstruction(int length) => new Instruction(new Range(_offset, length));
 		Instruction ReadShortInlineBrTargetInstruction(OpCode opcode) => CreateInstruction(opcode, (sbyte x, int end) => new Label(end + x));
@@ -73,7 +73,7 @@ namespace MethodCheck.Core.Parsing
 
 		Instruction CreateInstruction<T>(OpCode opCode)
 			where T : unmanaged
-			=> CreateInstruction(opCode, (T x, int _) => x);
+			=> CreateInstruction(opCode, (T x, int end) => x);
 
 		Instruction CreateInstruction<TIn, TOut>(OpCode opCode, Func<TIn, int, TOut> converter)
 			where TIn : unmanaged

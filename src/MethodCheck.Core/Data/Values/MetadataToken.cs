@@ -12,7 +12,7 @@ namespace MethodCheck.Core.Data
 			_token = token;
 		}
 
-		public override bool Equals(object obj) => obj is MetadataToken && Equals((MetadataToken)obj);
+		public override bool Equals(object obj) => obj is MetadataToken token && Equals(token);
 		public bool Equals(MetadataToken other) => other._token == _token;
 		public override int GetHashCode() => _token;
 		public override string ToString() => _token.ToString("X8", CultureInfo.InvariantCulture);
