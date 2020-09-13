@@ -12,7 +12,7 @@ namespace MethodCheck.Core.Data
 			_offset = offset;
 		}
 
-		public override bool Equals(object obj) => obj is Label && Equals((Label)obj);
+		public override bool Equals(object obj) => obj is Label label && Equals(label);
 		public bool Equals(Label other) => _offset == other._offset;
 		public int CompareTo(Label other) => _offset.CompareTo(other._offset);
 		public override int GetHashCode() => _offset;

@@ -24,7 +24,7 @@ namespace MethodCheck.Core.Data
 			}
 		}
 
-		public override bool Equals(object obj) => obj is Range && Equals((Range)obj);
+		public override bool Equals(object obj) => obj is Range range && Equals(range);
 		public bool Equals(Range other) => Offset == other.Offset && Length == other.Length;
 		public bool Contains(Range range) => range.Offset >= Offset && (range.Offset + range.Length - Offset) <= Length;
 		public override string ToString() => $"{Offset} ({Length})";
