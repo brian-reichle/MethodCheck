@@ -36,7 +36,7 @@ namespace MethodCheck.Test
 			}
 			else
 			{
-				throw new ArgumentException();
+				throw new ArgumentException("Could not identify format from resource name.", nameof(name));
 			}
 
 			var actual = data == null ? null : MethodFormatter.Format(data);
