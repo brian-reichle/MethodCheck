@@ -87,4 +87,7 @@
     <Rule Id="WTG3102" Action="Warning" />
     <Rule Id="WTG3103" Action="Warning" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.Features" RuleNamespace="Microsoft.CodeAnalysis.Features">
+    <Rule Id="IDE0040" Action="None" />
+  </Rules>
 </RuleSet>
