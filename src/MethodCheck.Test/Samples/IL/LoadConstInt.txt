@@ -16,4 +16,3 @@
   ldc.i4.1
   ldc.i4.m1
   ret
-

@@ -18,4 +18,3 @@ FE 0C 00 80 // ldloc 32768
   ldloc.2
   ldloc.3
   ret
-

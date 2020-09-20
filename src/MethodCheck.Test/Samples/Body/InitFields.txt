@@ -11,4 +11,3 @@
 .locals init 1100000A
 // code size: 1
   ret
-

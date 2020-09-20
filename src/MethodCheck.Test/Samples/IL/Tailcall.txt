@@ -6,4 +6,3 @@ FE 14          // tail.
   tail.
   callvirt        0A00001A
   ret
-

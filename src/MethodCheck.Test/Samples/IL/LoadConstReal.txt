@@ -6,4 +6,3 @@
   ldc.r8          2
   ldc.r4          2
   ret
-

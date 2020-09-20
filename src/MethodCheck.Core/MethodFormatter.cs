@@ -26,53 +26,33 @@ namespace MethodCheck.Core
 
 		static void WriteInstructions(MethodData data, StringBuilder builder, ImmutableHashSet<Label> jumpTargets)
 		{
+			var writer = new Writer(builder);
+
 			foreach (var instruction in data.Instructions)
 			{
 				if (jumpTargets.Contains(instruction.Range.Offset))
 				{
-					builder.Append(instruction.Range.Offset);
-					builder.AppendLine();
+					writer.WriteLabelDef(instruction.Range.Offset);
 				}
 
-				builder.Append("  ");
-
-				switch (instruction.Kind)
-				{
-					case InstructionKind.Invalid:
-						builder.Append("??");
-						break;
-
-					case InstructionKind.OpCode:
-						builder.Append(instruction.OpCode.Name);
-
-						if (instruction.Argument != null)
-						{
-							builder.Append(' ', Instruction.MaxMnemonicLength + 1 - instruction.OpCode.Name.Length);
-							builder.Append(' ');
-							WriteArgument(builder, instruction);
-						}
-
-						switch (instruction.OpCode.FlowControl)
-						{
-							case FlowControl.Branch:
-							case FlowControl.Return:
-							case FlowControl.Throw:
-								builder.AppendLine();
-								break;
-						}
-						break;
-				}
-
-				builder.AppendLine();
+				writer.WriteInstruction(instruction);
 			}
 		}
 
 		static void WriteExceptionHandlers(MethodData data, StringBuilder builder)
 		{
+			var started = false;
+
 			foreach (var section in data.DataSections)
 			{
 				foreach (var handler in section.ExceptionHandlers)
 				{
+					if (!started)
+					{
+						started = true;
+						builder.AppendLine();
+					}
+
 					WriteExceptionHandler(builder, handler);
 				}
 			}
@@ -112,47 +92,6 @@ namespace MethodCheck.Core
 			builder.Append(" to ");
 			builder.Append(handler.HandlerRange.Offset + handler.HandlerRange.Length);
 			builder.AppendLine();
-		}
-
-		static void WriteArgument(StringBuilder builder, Instruction instruction)
-		{
-			if (instruction.Argument == IncompleteArgument.Value)
-			{
-				builder.Append("??");
-				return;
-			}
-
-			switch (instruction.Argument)
-			{
-				case Label label:
-					var diff = label - (instruction.Range.Offset + instruction.Range.Length);
-					builder.Append(label);
-					builder.Append(" // ");
-
-					if (diff >= 0)
-					{
-						builder.Append('+');
-					}
-
-					builder.Append(diff);
-					break;
-
-				case ImmutableArray<Label> labels:
-					builder.Append('{');
-
-					foreach (var label in labels)
-					{
-						builder.Append(' ');
-						builder.Append(label);
-					}
-
-					builder.Append(" }");
-					break;
-
-				default:
-					builder.Append(instruction.Argument);
-					break;
-			}
 		}
 
 		static ImmutableHashSet<Label> CollectJumpTargets(MethodData data)
@@ -223,6 +162,117 @@ namespace MethodCheck.Core
 				builder.Append(data.CodeSize);
 				builder.AppendLine();
 			}
+		}
+
+		struct Writer
+		{
+			public Writer(StringBuilder builder)
+			{
+				_builder = builder;
+				_pendingNewline = false;
+			}
+
+			public void WriteLabelDef(Label label)
+			{
+				BeginLine();
+				_builder.Append(label);
+				_builder.AppendLine();
+			}
+
+			public void WriteInstruction(Instruction instruction)
+			{
+				BeginLine();
+				WriteIndent();
+
+				switch (instruction.Kind)
+				{
+					case InstructionKind.Invalid:
+						_builder.Append("??");
+						break;
+
+					case InstructionKind.OpCode:
+						_builder.Append(instruction.OpCode.Name);
+
+						if (instruction.Argument != null)
+						{
+							_builder.Append(' ', Instruction.MaxMnemonicLength + 1 - instruction.OpCode.Name.Length);
+							_builder.Append(' ');
+							WriteArgument(instruction);
+						}
+
+						switch (instruction.OpCode.FlowControl)
+						{
+							case FlowControl.Branch:
+							case FlowControl.Return:
+							case FlowControl.Throw:
+								_pendingNewline = true;
+								break;
+						}
+						break;
+				}
+
+				_builder.AppendLine();
+			}
+
+			public override string ToString() => _builder.ToString();
+
+			void BeginLine()
+			{
+				if (_pendingNewline)
+				{
+					_pendingNewline = false;
+					_builder.AppendLine();
+				}
+			}
+
+			void WriteIndent()
+			{
+				_builder.Append("  ");
+			}
+
+			void WriteArgument(Instruction instruction)
+			{
+				if (instruction.Argument == IncompleteArgument.Value)
+				{
+					_builder.Append("??");
+					return;
+				}
+
+				switch (instruction.Argument)
+				{
+					case Label label:
+						var diff = label - (instruction.Range.Offset + instruction.Range.Length);
+						_builder.Append(label);
+						_builder.Append(" // ");
+
+						if (diff >= 0)
+						{
+							_builder.Append('+');
+						}
+
+						_builder.Append(diff);
+						break;
+
+					case ImmutableArray<Label> labels:
+						_builder.Append('{');
+
+						foreach (var label in labels)
+						{
+							_builder.Append(' ');
+							_builder.Append(label);
+						}
+
+						_builder.Append(" }");
+						break;
+
+					default:
+						_builder.Append(instruction.Argument);
+						break;
+				}
+			}
+
+			readonly StringBuilder _builder;
+			bool _pendingNewline;
 		}
 	}
 }
