@@ -46,7 +46,7 @@ namespace MethodCheck.Core.Parsing
 		Instruction ReadInlineRInstruction(OpCode opcode) => CreateInstruction<double>(opcode);
 		Instruction ReadInlineTokInstruction(OpCode opcode) => CreateInstruction(opcode, (int x, int end) => new MetadataToken(x));
 		Instruction ReadInlineVarInstruction(OpCode opcode) => CreateInstruction<ushort>(opcode);
-		Instruction InvalidInstruction(int length) => new Instruction(new Range(_offset, length));
+		Instruction InvalidInstruction(int length) => new Instruction(new ILRange(_offset, length));
 		Instruction ReadShortInlineBrTargetInstruction(OpCode opcode) => CreateInstruction(opcode, (sbyte x, int end) => new Label(end + x));
 		Instruction ReadInlineBrTargetInstruction(OpCode opcode) => CreateInstruction(opcode, (int x, int end) => new Label(end + x));
 
@@ -96,7 +96,7 @@ namespace MethodCheck.Core.Parsing
 			return CreateInstruction(length, opCode, value);
 		}
 
-		Instruction CreateInstruction(int length, OpCode opcode, object? value) => new Instruction(new Range(_offset, length), opcode, value);
+		Instruction CreateInstruction(int length, OpCode opcode, object? value) => new Instruction(new ILRange(_offset, length), opcode, value);
 
 		static ImmutableArray<Label> CreateLabelList(int relativeOffset, ReadOnlySpan<int> offsets)
 		{
