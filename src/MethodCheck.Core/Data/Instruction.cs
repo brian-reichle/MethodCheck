@@ -7,7 +7,7 @@ namespace MethodCheck.Core.Data
 	{
 		public const int MaxMnemonicLength = 14;
 
-		public Instruction(Range range, OpCode opcode, object? argument)
+		public Instruction(ILRange range, OpCode opcode, object? argument)
 		{
 			Kind = InstructionKind.OpCode;
 			Range = range;
@@ -15,14 +15,14 @@ namespace MethodCheck.Core.Data
 			Argument = argument;
 		}
 
-		public Instruction(Range range)
+		public Instruction(ILRange range)
 		{
 			Kind = InstructionKind.Invalid;
 			Range = range;
 		}
 
 		public InstructionKind Kind { get; }
-		public Range Range { get; }
+		public ILRange Range { get; }
 		public OpCode OpCode { get; }
 		public object? Argument { get; }
 

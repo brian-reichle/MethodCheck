@@ -193,8 +193,8 @@ namespace MethodCheck.Core.Parsing
 		{
 			return new ExceptionHandler(
 				(ExceptionHandlingClauseOptions)clause.Flags,
-				new Range(clause.TryOffset, clause.TryLength),
-				new Range(clause.HandlerOffset, clause.HandlerLength),
+				new ILRange(clause.TryOffset, clause.TryLength),
+				new ILRange(clause.HandlerOffset, clause.HandlerLength),
 				clause.FilterOrType);
 		}
 
@@ -202,8 +202,8 @@ namespace MethodCheck.Core.Parsing
 		{
 			return new ExceptionHandler(
 				(ExceptionHandlingClauseOptions)clause.Flags,
-				new Range(clause.TryOffset, clause.TryLength),
-				new Range(clause.HandlerOffset, clause.HandlerLength),
+				new ILRange(clause.TryOffset, clause.TryLength),
+				new ILRange(clause.HandlerOffset, clause.HandlerLength),
 				clause.FilterOrType);
 		}
 

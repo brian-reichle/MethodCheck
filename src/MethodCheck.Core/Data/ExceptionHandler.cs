@@ -5,7 +5,7 @@ namespace MethodCheck.Core.Data
 {
 	public sealed class ExceptionHandler
 	{
-		public ExceptionHandler(ExceptionHandlingClauseOptions type, Range tryRange, Range handlerRange, int filterOrType)
+		public ExceptionHandler(ExceptionHandlingClauseOptions type, ILRange tryRange, ILRange handlerRange, int filterOrType)
 		{
 			Type = type;
 			TryRange = tryRange;
@@ -14,8 +14,8 @@ namespace MethodCheck.Core.Data
 		}
 
 		public ExceptionHandlingClauseOptions Type { get; }
-		public Range TryRange { get; }
-		public Range HandlerRange { get; }
+		public ILRange TryRange { get; }
+		public ILRange HandlerRange { get; }
 		public int FilterOrType { get; }
 	}
 }
