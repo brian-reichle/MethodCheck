@@ -16,7 +16,7 @@
     </PackageReference>
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="WTG.Analyzers" Version="2.10.0">
+    <PackageReference Include="WTG.Analyzers" Version="2.10.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
