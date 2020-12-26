@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -231,6 +232,42 @@ namespace MethodCheck.Test
 			var section = SectionFactory.Create(new ILRange(0, 10), handlers);
 
 			Assert.That(Format(section), Is.EqualTo(Expected));
+		}
+
+		[TestCaseSource(nameof(InvalidHandlers))]
+		public void InvalidHandlerConfigurations(ExceptionHandler[] handlers)
+		{
+			Assert.That(
+				() => SectionFactory.Create(new ILRange(0, 10), handlers),
+				Throws.InstanceOf<CannotGenerateSectionException>());
+		}
+
+		protected static IEnumerable<TestCaseData> InvalidHandlers()
+		{
+			const int ExceptionType = 0x02000010;
+
+			var baseHandler = new ExceptionHandler(ExceptionHandlingClauseOptions.Clause, new ILRange(2, 4), new ILRange(6, 2), ExceptionType);
+
+			yield return Data(
+				"Not fully contained.",
+				new ExceptionHandler(ExceptionHandlingClauseOptions.Clause, new ILRange(2, 2), new ILRange(8, 2), ExceptionType),
+				baseHandler);
+
+			yield return Data(
+				"Non contiguous handlers.",
+				baseHandler,
+				new ExceptionHandler(ExceptionHandlingClauseOptions.Clause, new ILRange(2, 4), new ILRange(9, 1), ExceptionType));
+
+			yield return Data(
+				"Handler extends outside bounds.",
+				new ExceptionHandler(ExceptionHandlingClauseOptions.Clause, new ILRange(2, 4), new ILRange(6, 5), ExceptionType));
+
+			yield return Data(
+				"Try outside bounds.",
+				new ExceptionHandler(ExceptionHandlingClauseOptions.Clause, new ILRange(10, 2), new ILRange(12, 2), ExceptionType));
+
+			static TestCaseData Data(string name, params ExceptionHandler[] handlers)
+				=> new TestCaseData(new object[] { handlers }).SetName("{m}(" + name + ")");
 		}
 
 		static string Format(BaseSection section)

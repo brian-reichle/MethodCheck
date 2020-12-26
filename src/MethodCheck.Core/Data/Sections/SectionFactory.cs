@@ -24,7 +24,9 @@ namespace MethodCheck.Core.Data
 				generator.Add(handler);
 			}
 
-			return generator.CreateSection(range);
+			var result = generator.CreateSection(range);
+			generator.VerifyEmpty();
+			return result;
 		}
 
 		struct Builder
@@ -120,7 +122,22 @@ namespace MethodCheck.Core.Data
 
 					if (range.Contains(item.TryRange))
 					{
-						builder.Add(item.Complete());
+						var newItem = item.Complete();
+
+						if (!range.Contains(newItem.Range))
+						{
+							throw new CannotGenerateSectionException();
+						}
+
+						foreach (var other in builder)
+						{
+							if (newItem.Range.Overlaps(other.Range))
+							{
+								throw new CannotGenerateSectionException();
+							}
+						}
+
+						builder.Add(newItem);
 					}
 					else
 					{
@@ -154,6 +171,14 @@ namespace MethodCheck.Core.Data
 
 			static Label End(ILRange range) => range.Offset + range.Length;
 
+			public void VerifyEmpty()
+			{
+				if (_pendingTryBlocks.Count > 0)
+				{
+					throw new CannotGenerateSectionException();
+				}
+			}
+
 			readonly List<TryBuilder> _pendingTryBlocks;
 
 			struct TryBuilder
@@ -180,10 +205,26 @@ namespace MethodCheck.Core.Data
 					{
 						var handlerEnd = End(handler.HandlerSection.Range);
 
-						if (handlerEnd > end)
+						if (handler.FilterSection != null)
 						{
-							end = handlerEnd;
+							var filterRange = handler.FilterSection.Range;
+
+							if (filterRange.Offset != end)
+							{
+								throw new CannotGenerateSectionException();
+							}
+
+							end = End(filterRange);
 						}
+
+						var handlerRange = handler.HandlerSection.Range;
+
+						if (handlerRange.Offset != end)
+						{
+							throw new CannotGenerateSectionException();
+						}
+
+						end = End(handlerRange);
 					}
 
 					return new TryBlockSection(
