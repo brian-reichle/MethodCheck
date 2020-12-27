@@ -85,17 +85,19 @@ namespace MethodCheck.Core
 
 		static void WriteExceptionHandler(StringBuilder builder, ExceptionHandler handler)
 		{
-			builder.Append(".try ");
-			builder.Append(handler.TryRange.Offset);
-			builder.Append(" to ");
-			builder.Append(handler.TryRange.Offset + handler.TryRange.Length);
+			builder
+				.Append(".try ")
+				.Append(handler.TryRange.Offset)
+				.Append(" to ")
+				.Append(handler.TryRange.Offset + handler.TryRange.Length);
 
 			switch (handler.Type)
 			{
 				case ExceptionHandlingClauseOptions.Clause:
-					builder.Append(" catch ");
-					builder.Append((MetadataToken)handler.FilterOrType);
-					builder.Append(' ');
+					builder
+						.Append(" catch ")
+						.Append((MetadataToken)handler.FilterOrType)
+						.Append(' ');
 					break;
 
 				case ExceptionHandlingClauseOptions.Fault:
@@ -107,16 +109,18 @@ namespace MethodCheck.Core
 					break;
 
 				case ExceptionHandlingClauseOptions.Filter:
-					builder.Append(" filter ");
-					builder.Append(new Label(handler.FilterOrType));
-					builder.Append(' ');
+					builder
+						.Append(" filter ")
+						.Append(new Label(handler.FilterOrType))
+						.Append(' ');
 					break;
 			}
 
-			builder.Append(handler.HandlerRange.Offset);
-			builder.Append(" to ");
-			builder.Append(handler.HandlerRange.Offset + handler.HandlerRange.Length);
-			builder.AppendLine();
+			builder
+				.Append(handler.HandlerRange.Offset)
+				.Append(" to ")
+				.Append(handler.HandlerRange.Offset + handler.HandlerRange.Length)
+				.AppendLine();
 		}
 
 		static ImmutableHashSet<Label> CollectJumpTargets(MethodData data, bool includeExceptionHandlers)
@@ -166,9 +170,10 @@ namespace MethodCheck.Core
 		{
 			if (data.MaxStack != 0)
 			{
-				builder.Append(".maxstack ");
-				builder.Append(data.MaxStack);
-				builder.AppendLine();
+				builder
+					.Append(".maxstack ")
+					.Append(data.MaxStack)
+					.AppendLine();
 			}
 
 			if (data.LocalsToken != 0)
@@ -180,15 +185,17 @@ namespace MethodCheck.Core
 					builder.Append("init ");
 				}
 
-				builder.Append(data.LocalsToken);
-				builder.AppendLine();
+				builder
+					.Append(data.LocalsToken)
+					.AppendLine();
 			}
 
 			if (data.CodeSize != 0)
 			{
-				builder.Append("// code size: ");
-				builder.Append(data.CodeSize);
-				builder.AppendLine();
+				builder
+					.Append("// code size: ")
+					.Append(data.CodeSize)
+					.AppendLine();
 			}
 		}
 
@@ -302,11 +309,15 @@ namespace MethodCheck.Core
 				switch (handler.Type)
 				{
 					case ExceptionHandlingClauseOptions.Fault:
-						_builder.Append(".fault").AppendLine();
+						_builder
+							.Append(".fault")
+							.AppendLine();
 						break;
 
 					case ExceptionHandlingClauseOptions.Finally:
-						_builder.Append(".finally").AppendLine();
+						_builder
+							.Append(".finally")
+							.AppendLine();
 						break;
 
 					case ExceptionHandlingClauseOptions.Clause:
@@ -320,7 +331,10 @@ namespace MethodCheck.Core
 						}
 						else if (handler.ExceptionType != default)
 						{
-							_builder.Append(' ').Append(handler.ExceptionType).AppendLine();
+							_builder
+								.Append(' ')
+								.Append(handler.ExceptionType)
+								.AppendLine();
 						}
 						break;
 
@@ -348,8 +362,7 @@ namespace MethodCheck.Core
 
 						if (instruction.Argument != null)
 						{
-							_builder.Append(' ', Instruction.MaxMnemonicLength + 1 - name.Length);
-							_builder.Append(' ');
+							_builder.Append(' ', Instruction.MaxMnemonicLength + 2 - name.Length);
 							WriteArgument(instruction);
 						}
 
@@ -370,8 +383,9 @@ namespace MethodCheck.Core
 			void WriteLabelDef(Label label)
 			{
 				BeginLine();
-				_builder.Append(label);
-				_builder.AppendLine();
+				_builder
+					.Append(label)
+					.AppendLine();
 			}
 
 			void WriteArgument(Instruction instruction)
@@ -386,8 +400,9 @@ namespace MethodCheck.Core
 				{
 					case Label label:
 						var diff = label - (instruction.Range.Offset + instruction.Range.Length);
-						_builder.Append(label);
-						_builder.Append(" // ");
+						_builder
+							.Append(label)
+							.Append(" // ");
 
 						if (diff >= 0)
 						{
@@ -402,8 +417,9 @@ namespace MethodCheck.Core
 
 						foreach (var label in labels)
 						{
-							_builder.Append(' ');
-							_builder.Append(label);
+							_builder
+								.Append(' ')
+								.Append(label);
 						}
 
 						_builder.Append(" }");
@@ -418,7 +434,9 @@ namespace MethodCheck.Core
 			void StartBlock()
 			{
 				WriteIndent();
-				_builder.Append('{').AppendLine();
+				_builder
+					.Append('{')
+					.AppendLine();
 				_indentDepth++;
 			}
 
@@ -426,7 +444,9 @@ namespace MethodCheck.Core
 			{
 				_indentDepth--;
 				WriteIndent();
-				_builder.Append('}').AppendLine();
+				_builder
+					.Append('}')
+					.AppendLine();
 			}
 
 			void BeginLine()
