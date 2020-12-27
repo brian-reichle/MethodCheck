@@ -343,11 +343,12 @@ namespace MethodCheck.Core
 						break;
 
 					case InstructionKind.OpCode:
-						_builder.Append(instruction.OpCode.Name);
+						var name = instruction.OpCode.Name!;
+						_builder.Append(name);
 
 						if (instruction.Argument != null)
 						{
-							_builder.Append(' ', Instruction.MaxMnemonicLength + 1 - instruction.OpCode.Name.Length);
+							_builder.Append(' ', Instruction.MaxMnemonicLength + 1 - name.Length);
 							_builder.Append(' ');
 							WriteArgument(instruction);
 						}
