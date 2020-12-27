@@ -11,11 +11,11 @@ namespace MethodCheck.Core
 {
 	public static class MethodFormatter
 	{
-		public static string Format(MethodData data)
+		public static string Format(MethodData data, bool inlineExceptionHandlers = false)
 		{
 			if (data == null) throw new ArgumentNullException(nameof(data));
 
-			var sections = BuildSections(data);
+			var sections = inlineExceptionHandlers ? BuildSections(data) : null;
 			var builder = new StringBuilder();
 			var jumpTargets = CollectJumpTargets(data, sections == null);
 

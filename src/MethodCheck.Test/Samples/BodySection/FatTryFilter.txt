@@ -20,34 +20,34 @@ DE 00          // leave.s 0
 2A             // ret
 
 //[Data Section]
-01             // CorILMethod_Sect_EHTable
-10             // DataSize: 16
-00 00          // Reserved
+41             // CorILMethod_Sect_EHTable
+1C 00 00       // DataSize: 28
 //[Clause1]
-01 00          // COR_ILEXCEPTION_CLAUSE_FILTER
-01 00          // Try Offset
-08             // Try Length
-10 00          // Handler Offset
-07             // Handler Length
+01 00 00 00    // COR_ILEXCEPTION_CLAUSE_FILTER
+01 00 00 00    // Try Offset
+08 00 00 00    // Try Length
+10 00 00 00    // Handler Offset
+07 00 00 00    // Handler Length
 09 00 00 00    // Filter Offset
 ====
 .maxstack 1
 // code size: 24
   nop
-IL_0001
-  ldarg.0
-  callvirt        0A00001A
-  leave.s         IL_0010 // +7
-
-IL_0009
-  call            0A000044
-  endfilter
-
+  .try
+  {
+    ldarg.0
+    callvirt        0A00001A
+    leave.s         IL_0010 // +7
+  }
+  .catch
+  {
+    call            0A000044
+    endfilter
+  }
+  {
 IL_0010
-  call            0A000044
-  leave.s         IL_0017 // +0
-
+    call            0A000044
+    leave.s         IL_0017 // +0
+  }
 IL_0017
   ret
-
-.try IL_0001 to IL_0009 filter IL_0009 IL_0010 to IL_0017
