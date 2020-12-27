@@ -70,7 +70,8 @@ namespace MethodCheck
 
 				if (data != null)
 				{
-					ILTextBox.Text = MethodFormatter.Format(data);
+					var sectioned = ShowSectioned.IsChecked ?? false;
+					ILTextBox.Text = MethodFormatter.Format(data, sectioned);
 				}
 			}
 		}

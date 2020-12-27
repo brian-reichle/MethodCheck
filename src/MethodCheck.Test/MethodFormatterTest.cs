@@ -25,21 +25,29 @@ namespace MethodCheck.Test
 			var blob = BinaryProcessor.Parse(source.AsSpan(0, group.Index));
 
 			MethodData? data;
+			bool sectioned;
 
 			if (name.StartsWith("Body.", StringComparison.InvariantCulture))
 			{
 				data = MethodParser.ParseBody(blob);
+				sectioned = false;
 			}
 			else if (name.StartsWith("IL.", StringComparison.InvariantCulture))
 			{
 				data = MethodParser.ParseIL(blob);
+				sectioned = false;
+			}
+			else if (name.StartsWith("BodySection.", StringComparison.InvariantCulture))
+			{
+				data = MethodParser.ParseBody(blob);
+				sectioned = true;
 			}
 			else
 			{
 				throw new ArgumentException("Could not identify format from resource name.", nameof(name));
 			}
 
-			var actual = data == null ? null : MethodFormatter.Format(data);
+			var actual = data == null ? null : MethodFormatter.Format(data, sectioned);
 			var expected = source.Substring(group.Index + group.Length);
 
 			Assert.That(actual, Is.EqualTo(expected));

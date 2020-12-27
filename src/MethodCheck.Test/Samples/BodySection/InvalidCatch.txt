@@ -1,0 +1,45 @@
+//[Header]
+0B 30          // CorILMethod_FatFormat, CorILMethod_MoreSects, header size: 3*4 bytes
+01 00          // max stack size: 1
+10 00 00 00    // code size: 16
+00 00 00 00    // locals signature token: 00000000
+
+//[IL]
+// try {
+02             // ldarg.0
+6F 1A 00 00 0A // callvirt 0A00001A
+DE 07          // leave.s 7
+// } catch {
+28 44 00 00 0A // call 0A000044
+DE 00          // leave.s 0
+2A             // ret
+// ??
+// }
+
+//[Data Section]
+01             // CorILMethod_Sect_EHTable
+10             // DataSize: 16
+00 00          // Reserved
+//[Clause1]
+00 00          // COR_ILEXCEPTION_CLAUSE_EXCEPTION
+00 00          // Try Offset
+08             // Try Length
+08 00          // Handler Offset
+09             // Handler Length
+11 00 00 02    // Exception Type
+====
+.maxstack 1
+// code size: 16
+IL_0000
+  ldarg.0
+  callvirt        0A00001A
+  leave.s         IL_000F // +7
+
+IL_0008
+  call            0A000044
+  leave.s         IL_000F // +0
+
+IL_000F
+  ret
+
+.try IL_0000 to IL_0008 catch 02000011 IL_0008 to IL_0011

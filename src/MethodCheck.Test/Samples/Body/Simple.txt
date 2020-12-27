@@ -7,4 +7,3 @@
 .maxstack 8
 // code size: 1
   ret
-

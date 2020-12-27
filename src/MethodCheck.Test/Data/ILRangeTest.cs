@@ -19,5 +19,14 @@ namespace MethodCheck.Test
 		[TestCase(4, 1, ExpectedResult = false, TestName = "{m}_Prologue")]
 		[TestCase(15, 1, ExpectedResult = false, TestName = "{m}_Epilogue")]
 		public bool Contains(int start, int length) => new ILRange(5, 10).Contains(new ILRange(start, length));
+
+		[TestCase(5, 10, ExpectedResult = true, TestName = "{m}_Exact")]
+		[TestCase(5, 1, ExpectedResult = true, TestName = "{m}_InsideStart")]
+		[TestCase(14, 1, ExpectedResult = true, TestName = "{m}_InsideEnd")]
+		[TestCase(4, 2, ExpectedResult = true, TestName = "{m}_OverlapStart")]
+		[TestCase(14, 2, ExpectedResult = true, TestName = "{m}_OverlapEnd")]
+		[TestCase(4, 1, ExpectedResult = false, TestName = "{m}_Prologue")]
+		[TestCase(15, 1, ExpectedResult = false, TestName = "{m}_Epilogue")]
+		public bool Overlaps(int start, int length) => new ILRange(5, 10).Overlaps(new ILRange(start, length));
 	}
 }
