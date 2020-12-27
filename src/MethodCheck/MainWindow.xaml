@@ -39,6 +39,9 @@
 				<RadioButton Name="SourceTypeBody" Content="Body" Command="{x:Static local:MainWindow.Run}" />
 			</ToolBar>
 			<ToolBar>
+				<ToggleButton Name="ShowSectioned" Content="Sectioned" IsChecked="True" Command="{x:Static local:MainWindow.Run}" />
+			</ToolBar>
+			<ToolBar>
 				<Button Content="Refresh" Command="{x:Static local:MainWindow.Run}" />
 			</ToolBar>
 		</ToolBarTray>
