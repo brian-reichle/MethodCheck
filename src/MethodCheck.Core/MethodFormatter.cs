@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Text;
 using MethodCheck.Core.Data;
+using MethodCheck.Core.Data.Sections;
 using FlowControl = System.Reflection.Emit.FlowControl;
 
 namespace MethodCheck.Core
@@ -14,29 +15,53 @@ namespace MethodCheck.Core
 		{
 			if (data == null) throw new ArgumentNullException(nameof(data));
 
+			var sections = BuildSections(data);
 			var builder = new StringBuilder();
-			var jumpTargets = CollectJumpTargets(data);
+			var jumpTargets = CollectJumpTargets(data, sections == null);
 
 			WriteHeader(data, builder);
-			WriteInstructions(data, builder, jumpTargets);
-			WriteExceptionHandlers(data, builder);
+
+			var writer = new InstructionWriter(builder, jumpTargets, data.Instructions);
+
+			if (sections != null)
+			{
+				writer.WriteInstructions(sections);
+			}
+			else
+			{
+				writer.WriteInstructions();
+				WriteExceptionHandlers(data, builder);
+			}
 
 			return builder.ToString();
 		}
 
-		static void WriteInstructions(MethodData data, StringBuilder builder, ImmutableHashSet<Label> jumpTargets)
+		static BaseSection? BuildSections(MethodData data)
 		{
-			var writer = new Writer(builder);
+			var ilRange = InstructionsRange(data.Instructions);
+			BaseSection? sections = null;
 
-			foreach (var instruction in data.Instructions)
+			foreach (var dataSection in data.DataSections)
 			{
-				if (jumpTargets.Contains(instruction.Range.Offset))
+				if (dataSection.ExceptionHandlers.Length > 0)
 				{
-					writer.WriteLabelDef(instruction.Range.Offset);
-				}
+					if (sections != null)
+					{
+						return null;
+					}
 
-				writer.WriteInstruction(instruction);
+					try
+					{
+						sections = SectionFactory.Create(ilRange, dataSection.ExceptionHandlers);
+					}
+					catch (CannotGenerateSectionException)
+					{
+						return null;
+					}
+				}
 			}
+
+			return sections;
 		}
 
 		static void WriteExceptionHandlers(MethodData data, StringBuilder builder)
@@ -94,7 +119,7 @@ namespace MethodCheck.Core
 			builder.AppendLine();
 		}
 
-		static ImmutableHashSet<Label> CollectJumpTargets(MethodData data)
+		static ImmutableHashSet<Label> CollectJumpTargets(MethodData data, bool includeExceptionHandlers)
 		{
 			var jumpTargets = ImmutableHashSet.CreateBuilder<Label>();
 
@@ -115,18 +140,21 @@ namespace MethodCheck.Core
 				}
 			}
 
-			foreach (var section in data.DataSections)
+			if (includeExceptionHandlers)
 			{
-				foreach (var handler in section.ExceptionHandlers)
+				foreach (var section in data.DataSections)
 				{
-					jumpTargets.Add(handler.TryRange.Offset);
-					jumpTargets.Add(handler.TryRange.Offset + handler.TryRange.Length);
-					jumpTargets.Add(handler.HandlerRange.Offset);
-					jumpTargets.Add(handler.HandlerRange.Offset + handler.HandlerRange.Length);
-
-					if (handler.Type == ExceptionHandlingClauseOptions.Filter)
+					foreach (var handler in section.ExceptionHandlers)
 					{
-						jumpTargets.Add(new Label(handler.FilterOrType));
+						jumpTargets.Add(handler.TryRange.Offset);
+						jumpTargets.Add(handler.TryRange.Offset + handler.TryRange.Length);
+						jumpTargets.Add(handler.HandlerRange.Offset);
+						jumpTargets.Add(handler.HandlerRange.Offset + handler.HandlerRange.Length);
+
+						if (handler.Type == ExceptionHandlingClauseOptions.Filter)
+						{
+							jumpTargets.Add(new Label(handler.FilterOrType));
+						}
 					}
 				}
 			}
@@ -164,22 +192,146 @@ namespace MethodCheck.Core
 			}
 		}
 
-		struct Writer
+		static ILRange InstructionsRange(ImmutableArray<Instruction> instructions)
 		{
-			public Writer(StringBuilder builder)
+			if (instructions.Length == 0)
+			{
+				return default;
+			}
+
+			var start = instructions[0].Range.Offset;
+			var lastInstruction = instructions[instructions.Length - 1];
+			var end = lastInstruction.Range.Offset + lastInstruction.Range.Length;
+			return new ILRange(start, end - start);
+		}
+
+		struct InstructionWriter
+		{
+			public InstructionWriter(StringBuilder builder, ImmutableHashSet<Label> jumpTargets, ImmutableArray<Instruction> instructions)
 			{
 				_builder = builder;
 				_pendingNewline = false;
+				_indentDepth = 1;
+				_jumpTargets = jumpTargets;
+				_instructions = instructions;
 			}
 
-			public void WriteLabelDef(Label label)
+			public void WriteInstructions()
 			{
-				BeginLine();
-				_builder.Append(label);
-				_builder.AppendLine();
+				foreach (var instruction in _instructions)
+				{
+					WriteInstruction(instruction);
+				}
 			}
 
-			public void WriteInstruction(Instruction instruction)
+			public void WriteInstructions(BaseSection section)
+			{
+				switch (section)
+				{
+					case ILSection ilSection:
+						WriteInstructions(ilSection);
+						break;
+
+					case SequenceSection sequenceSection:
+						foreach (var subSection in sequenceSection.Sections)
+						{
+							WriteInstructions(subSection);
+						}
+						break;
+
+					case TryBlockSection trySection:
+						WriteInstructions(trySection);
+						break;
+				}
+			}
+
+			void WriteBlock(BaseSection section)
+			{
+				_pendingNewline = false;
+				StartBlock();
+				WriteInstructions(section);
+				EndBlock();
+				_pendingNewline = false;
+			}
+
+			void WriteInstructions(ILSection section)
+			{
+				var index = IndexOf(section.Range.Offset);
+				var end = section.Range.Offset + section.Range.Length;
+
+				while (index < _instructions.Length)
+				{
+					var instruction = _instructions[index++];
+
+					if (instruction.Range.Offset >= end)
+					{
+						break;
+					}
+
+					WriteInstruction(instruction);
+				}
+			}
+
+			void WriteInstructions(TryBlockSection section)
+			{
+				WriteIndent();
+				_builder.Append(".try").AppendLine();
+
+				WriteBlock(section.TryBlock);
+
+				foreach (var handler in section.HandlerBlocks)
+				{
+					WriteHandler(handler);
+				}
+			}
+
+			void WriteInstruction(Instruction instruction)
+			{
+				if (_jumpTargets.Contains(instruction.Range.Offset))
+				{
+					WriteLabelDef(instruction.Range.Offset);
+				}
+
+				WriteInstructionCore(instruction);
+			}
+
+			void WriteHandler(HandlerBlock handler)
+			{
+				WriteIndent();
+
+				switch (handler.Type)
+				{
+					case ExceptionHandlingClauseOptions.Fault:
+						_builder.Append(".fault").AppendLine();
+						break;
+
+					case ExceptionHandlingClauseOptions.Finally:
+						_builder.Append(".finally").AppendLine();
+						break;
+
+					case ExceptionHandlingClauseOptions.Clause:
+					case ExceptionHandlingClauseOptions.Filter:
+						_builder.Append(".catch");
+
+						if (handler.FilterSection != null)
+						{
+							_builder.AppendLine();
+							WriteBlock(handler.FilterSection);
+						}
+						else if (handler.ExceptionType != default)
+						{
+							_builder.Append(' ').Append(handler.ExceptionType).AppendLine();
+						}
+						break;
+
+					default:
+						throw new ArgumentException("Unknown handler type: " + handler.Type, nameof(handler));
+				}
+
+				WriteBlock(handler.HandlerSection);
+			}
+
+			void WriteInstructionCore(Instruction instruction)
 			{
 				BeginLine();
 				WriteIndent();
@@ -214,20 +366,11 @@ namespace MethodCheck.Core
 				_builder.AppendLine();
 			}
 
-			public override string ToString() => _builder.ToString();
-
-			void BeginLine()
+			void WriteLabelDef(Label label)
 			{
-				if (_pendingNewline)
-				{
-					_pendingNewline = false;
-					_builder.AppendLine();
-				}
-			}
-
-			void WriteIndent()
-			{
-				_builder.Append("  ");
+				BeginLine();
+				_builder.Append(label);
+				_builder.AppendLine();
 			}
 
 			void WriteArgument(Instruction instruction)
@@ -271,8 +414,66 @@ namespace MethodCheck.Core
 				}
 			}
 
-			readonly StringBuilder _builder;
+			void StartBlock()
+			{
+				WriteIndent();
+				_builder.Append('{').AppendLine();
+				_indentDepth++;
+			}
+
+			void EndBlock()
+			{
+				_indentDepth--;
+				WriteIndent();
+				_builder.Append('}').AppendLine();
+			}
+
+			void BeginLine()
+			{
+				if (_pendingNewline)
+				{
+					_pendingNewline = false;
+					_builder.AppendLine();
+				}
+			}
+
+			void WriteIndent()
+			{
+				_builder.Append(' ', _indentDepth * 2);
+			}
+
+			int IndexOf(Label label)
+			{
+				var min = 0;
+				var max = _instructions.Length - 1;
+
+				while (min <= max)
+				{
+					var mid = (min + max) / 2;
+					var offset = _instructions[mid].Range.Offset;
+
+					if (label < offset)
+					{
+						max = mid - 1;
+					}
+					else if (label > offset)
+					{
+						min = mid + 1;
+					}
+					else
+					{
+						return mid;
+					}
+				}
+
+				throw new ArgumentException("Label does not correspond to an instruction.", nameof(label));
+			}
+
 			bool _pendingNewline;
+			int _indentDepth;
+			readonly StringBuilder _builder;
+			readonly ImmutableHashSet<Label> _jumpTargets;
+			readonly ImmutableArray<Instruction> _instructions;
 		}
 	}
 }

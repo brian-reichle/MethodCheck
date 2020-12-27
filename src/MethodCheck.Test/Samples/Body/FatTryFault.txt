@@ -32,16 +32,16 @@ DE 00          // leave.s 0
 .maxstack 1
 // code size: 17
   nop
-IL_0001
-  ldarg.0
-  callvirt        0A00001A
-  leave.s         IL_0010 // +7
-
-IL_0009
-  call            0A000044
-  leave.s         IL_0010 // +0
-
+  .try
+  {
+    ldarg.0
+    callvirt        0A00001A
+    leave.s         IL_0010 // +7
+  }
+  .fault
+  {
+    call            0A000044
+    leave.s         IL_0010 // +0
+  }
 IL_0010
   ret
-
-.try IL_0001 to IL_0009 fault IL_0009 to IL_0010
