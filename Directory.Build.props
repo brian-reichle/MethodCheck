@@ -17,6 +17,7 @@ CS1591 - Missing XML comment.
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
 
 		<Version>0.1.0</Version>
 		<Authors>Brian Reichle</Authors>
