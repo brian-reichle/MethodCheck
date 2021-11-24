@@ -41,4 +41,7 @@ CS1591 - Missing XML comment.
 	<PropertyGroup Condition=" '$(Platform)' == 'x86' ">
 		<PlatformTarget>x86</PlatformTarget>
 	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="Properties\stylecop.json" />
+	</ItemGroup>
 </Project>

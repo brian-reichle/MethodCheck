@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "xmlHeader": false,
+      "companyName": "Brian Reichle",
+      "copyrightText": "Copyright (c) {companyName}.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.",
+      "documentInterfaces": false,
+      "documentExposedElements": false,
+      "documentInternalElements": false,
+      "fileNamingConvention": "metadata"
+    },
+    "indentation": {
+      "indentationSize": 4,
+      "tabSize": 4,
+      "useTabs": true
+    },
+    "orderingRules": {
+      "blankLinesBetweenUsingGroups": "omit",
+      "systemUsingDirectivesFirst": true,
+      "usingDirectivesPlacement": "outsideNamespace",
+      "elementOrder": [ "accessibility", "constant", "kind", "static", "readonly"]
+    },
+    "maintainabilityRules": {
+      "topLevelTypes": [ "class", "interface", "struct", "enum" ]
+    },
+    "layoutRules": {
+      "newlineAtEndOfFile": "require"
+    }
+  }
+}

@@ -60,7 +60,7 @@ namespace MethodCheck.Core.Parsing
 				if (labelCount + 1 < values.Length)
 				{
 					values = values.Slice(1, labelCount);
-					var relativeOffset = argStart + 4 + labelCount * 4;
+					var relativeOffset = argStart + 4 + (labelCount * 4);
 					var argument = CreateLabelList(relativeOffset, values);
 					return CreateInstruction(relativeOffset - _offset, opcode, argument);
 				}

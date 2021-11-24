@@ -53,8 +53,6 @@ namespace MethodCheck.Test
 			Assert.That(actual, Is.EqualTo(expected));
 		}
 
-		#region Implementation
-
 		protected static IEnumerable<string> Samples
 		{
 			get
@@ -75,7 +73,5 @@ namespace MethodCheck.Test
 
 		const string ResourcePrefix = "MethodCheck.Test.Samples.";
 		static readonly Regex Splitter = new(@"(?<splitter>===+\r?\n)", RegexOptions.ExplicitCapture | RegexOptions.Multiline);
-
-		#endregion
 	}
 }
