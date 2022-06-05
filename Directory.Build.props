@@ -14,7 +14,7 @@ CS1591 - Missing XML comment.
 		-->
 		<WarningsNotAsErrors>618,1030,1701,1702</WarningsNotAsErrors>
 		<NoWarn>1591</NoWarn>
-		<LangVersion>8.0</LangVersion>
+		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 

@@ -10,8 +10,8 @@ namespace MethodCheck
 {
 	public partial class MainWindow : Window
 	{
-		public static readonly RoutedCommand Run = new RoutedCommand(nameof(Run), typeof(MainWindow));
-		public static readonly RoutedCommand SetFocus = new RoutedCommand(nameof(SetFocus), typeof(MainWindow));
+		public static readonly RoutedCommand Run = new(nameof(Run), typeof(MainWindow));
+		public static readonly RoutedCommand SetFocus = new(nameof(SetFocus), typeof(MainWindow));
 
 		public MainWindow()
 		{

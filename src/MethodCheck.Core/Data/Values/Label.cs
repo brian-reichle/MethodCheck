@@ -19,9 +19,9 @@ namespace MethodCheck.Core.Data
 		public override string ToString() => "IL_" + _offset.ToString("X4", CultureInfo.InvariantCulture);
 
 		public static explicit operator int(Label label) => label._offset;
-		public static implicit operator Label(int offset) => new Label(offset);
-		public static Label operator +(Label label, int offset) => new Label(label._offset + offset);
-		public static Label operator -(Label label, int offset) => new Label(label._offset - offset);
+		public static implicit operator Label(int offset) => new(offset);
+		public static Label operator +(Label label, int offset) => new(label._offset + offset);
+		public static Label operator -(Label label, int offset) => new(label._offset - offset);
 		public static int operator -(Label lhs, Label rhs) => lhs._offset - rhs._offset;
 		public static bool operator ==(Label lhs, Label rhs) => lhs.Equals(rhs);
 		public static bool operator !=(Label lhs, Label rhs) => !lhs.Equals(rhs);
