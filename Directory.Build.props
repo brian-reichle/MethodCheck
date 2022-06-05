@@ -17,6 +17,7 @@ CS1591 - Missing XML comment.
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
 
 		<Version>0.1.0</Version>
 		<Authors>Brian Reichle</Authors>
@@ -25,8 +26,6 @@ CS1591 - Missing XML comment.
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\MethodCheck.ruleset</CodeAnalysisRuleSet>
-		<CodeAnalysisRuleSet Condition="$(MSBuildProjectFile.Contains('.Test.'))">$(MSBuildThisFileDirectory)build\MethodCheck.Test.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugSymbols>true</DebugSymbols>
@@ -40,4 +39,8 @@ CS1591 - Missing XML comment.
 	<PropertyGroup Condition=" '$(Platform)' == 'x86' ">
 		<PlatformTarget>x86</PlatformTarget>
 	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="Properties\stylecop.json" />
+		<GlobalAnalyzerConfigFiles Condition="$(MSBuildProjectFile.Contains('.Test.'))" Include="$(MSBuildThisFileDirectory)build\UnitTest.editorconfig" />
+	</ItemGroup>
 </Project>
