@@ -26,8 +26,6 @@ CS1591 - Missing XML comment.
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\MethodCheck.ruleset</CodeAnalysisRuleSet>
-		<CodeAnalysisRuleSet Condition="$(MSBuildProjectFile.Contains('.Test.'))">$(MSBuildThisFileDirectory)build\MethodCheck.Test.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugSymbols>true</DebugSymbols>
@@ -43,5 +41,6 @@ CS1591 - Missing XML comment.
 	</PropertyGroup>
 	<ItemGroup>
 		<AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="Properties\stylecop.json" />
+		<GlobalAnalyzerConfigFiles Condition="$(MSBuildProjectFile.Contains('.Test.'))" Include="$(MSBuildThisFileDirectory)build\UnitTest.editorconfig" />
 	</ItemGroup>
 </Project>
