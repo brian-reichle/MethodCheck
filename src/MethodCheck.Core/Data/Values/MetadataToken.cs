@@ -20,7 +20,7 @@ namespace MethodCheck.Core.Data
 		public static bool operator ==(MetadataToken token1, MetadataToken token2) => token1._token == token2._token;
 		public static bool operator !=(MetadataToken token1, MetadataToken token2) => token1._token != token2._token;
 
-		public static implicit operator MetadataToken(int token) => new MetadataToken(token);
+		public static implicit operator MetadataToken(int token) => new(token);
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		readonly int _token;

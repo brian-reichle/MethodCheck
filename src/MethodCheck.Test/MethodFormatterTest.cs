@@ -74,7 +74,7 @@ namespace MethodCheck.Test
 		}
 
 		const string ResourcePrefix = "MethodCheck.Test.Samples.";
-		static readonly Regex Splitter = new Regex(@"(?<splitter>===+\r?\n)", RegexOptions.ExplicitCapture | RegexOptions.Multiline);
+		static readonly Regex Splitter = new(@"(?<splitter>===+\r?\n)", RegexOptions.ExplicitCapture | RegexOptions.Multiline);
 
 		#endregion
 	}

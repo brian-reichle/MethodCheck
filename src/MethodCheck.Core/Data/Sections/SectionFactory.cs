@@ -31,7 +31,7 @@ namespace MethodCheck.Core.Data
 
 		struct Builder
 		{
-			public static Builder New() => new Builder(new List<TryBuilder>());
+			public static Builder New() => new(new List<TryBuilder>());
 
 			Builder(List<TryBuilder> pendingTryBlocks)
 			{
