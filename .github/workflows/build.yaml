@@ -7,12 +7,11 @@ on:
 
 jobs:
   build:
-    name: Build ${{ matrix.configuration }} (SDK ${{ matrix.sdk }})
+    name: Build ${{ matrix.configuration }}
 
     strategy:
       matrix:
         os: [ windows-latest ]
-        sdk: [ 5.0.101 ]
         configuration: [ Debug, Release ]
 
     runs-on: ${{ matrix.os }}
@@ -22,7 +21,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.sdk }}
+        dotnet-version: 6.0.202
     - name: Build MethodCheck
       run: dotnet build src --configuration ${{ matrix.configuration }}
     - name: Run Tests
