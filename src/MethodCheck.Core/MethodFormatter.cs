@@ -388,7 +388,7 @@ namespace MethodCheck.Core
 					.AppendLine();
 			}
 
-			void WriteArgument(Instruction instruction)
+			readonly void WriteArgument(Instruction instruction)
 			{
 				if (instruction.Argument == IncompleteArgument.Value)
 				{
@@ -458,12 +458,12 @@ namespace MethodCheck.Core
 				}
 			}
 
-			void WriteIndent()
+			readonly void WriteIndent()
 			{
 				_builder.Append(' ', _indentDepth * 2);
 			}
 
-			int IndexOf(Label label)
+			readonly int IndexOf(Label label)
 			{
 				var min = 0;
 				var max = _instructions.Length - 1;

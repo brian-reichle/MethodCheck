@@ -29,7 +29,7 @@ namespace MethodCheck.Core.Data
 			return result;
 		}
 
-		struct Builder
+		readonly struct Builder
 		{
 			public static Builder New() => new(new List<TryBuilder>());
 
@@ -181,7 +181,7 @@ namespace MethodCheck.Core.Data
 
 			readonly List<TryBuilder> _pendingTryBlocks;
 
-			struct TryBuilder
+			readonly struct TryBuilder
 			{
 				public TryBuilder(ILRange tryRange, BaseSection trySection)
 				{

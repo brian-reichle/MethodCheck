@@ -20,11 +20,7 @@ namespace MethodCheck
 			Loaded += (sender, e) =>
 			{
 				var window = (MainWindow)sender;
-
-				if (window.BytesTextBox != null)
-				{
-					window.BytesTextBox.Focus();
-				}
+				window.BytesTextBox?.Focus();
 			};
 		}
 

@@ -6,7 +6,7 @@ namespace MethodCheck.Core.Parsing
 {
 	ref partial struct ILReader
 	{
-		Instruction Read()
+		readonly Instruction Read()
 		{
 			switch (_buffer[_offset])
 			{
