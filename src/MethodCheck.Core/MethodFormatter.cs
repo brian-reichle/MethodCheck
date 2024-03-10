@@ -13,7 +13,7 @@ namespace MethodCheck.Core
 	{
 		public static string Format(MethodData data, bool inlineExceptionHandlers = false)
 		{
-			if (data == null) throw new ArgumentNullException(nameof(data));
+			ArgumentNullException.ThrowIfNull(data);
 
 			var sections = inlineExceptionHandlers ? BuildSections(data) : null;
 			var builder = new StringBuilder();

@@ -12,10 +12,7 @@ namespace MethodCheck.Core.Data
 		// Creates a section from the provided values, assuming the handlers are ordered correctly.
 		public static BaseSection Create(ILRange range, IEnumerable<ExceptionHandler> handlers)
 		{
-			if (handlers == null)
-			{
-				throw new ArgumentNullException(nameof(handlers));
-			}
+			ArgumentNullException.ThrowIfNull(handlers);
 
 			var generator = Builder.New();
 
