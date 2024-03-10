@@ -3,13 +3,8 @@ using System.Collections.Immutable;
 
 namespace MethodCheck.Core.Data
 {
-	public sealed class MethodDataSection
+	public sealed class MethodDataSection(ImmutableArray<ExceptionHandler> exceptionHandlers)
 	{
-		public MethodDataSection(ImmutableArray<ExceptionHandler> exceptionHandlers)
-		{
-			ExceptionHandlers = exceptionHandlers;
-		}
-
-		public ImmutableArray<ExceptionHandler> ExceptionHandlers { get; }
+		public ImmutableArray<ExceptionHandler> ExceptionHandlers { get; } = exceptionHandlers;
 	}
 }

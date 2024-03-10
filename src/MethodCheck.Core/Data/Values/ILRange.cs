@@ -3,16 +3,10 @@ using System;
 
 namespace MethodCheck.Core.Data
 {
-	public readonly struct ILRange : IEquatable<ILRange>
+	public readonly struct ILRange(Label offset, int length) : IEquatable<ILRange>
 	{
-		public ILRange(Label offset, int length)
-		{
-			Offset = offset;
-			Length = length;
-		}
-
-		public Label Offset { get; }
-		public int Length { get; }
+		public Label Offset { get; } = offset;
+		public int Length { get; } = length;
 
 		public override int GetHashCode()
 		{

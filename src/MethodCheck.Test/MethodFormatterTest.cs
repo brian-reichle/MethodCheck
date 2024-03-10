@@ -12,13 +12,13 @@ using NUnit.Framework;
 namespace MethodCheck.Test
 {
 	[TestFixture]
-	class MethodFormatterTest
+	partial class MethodFormatterTest
 	{
 		[Test]
 		public void ParseAndFormat([ValueSource(nameof(Samples))] string name)
 		{
 			var source = Load(name);
-			var match = Splitter.Match(source);
+			var match = Splitter().Match(source);
 			Assert.That(match.Success, Is.True);
 
 			var group = match.Groups["splitter"];
@@ -72,6 +72,8 @@ namespace MethodCheck.Test
 		}
 
 		const string ResourcePrefix = "MethodCheck.Test.Samples.";
-		static readonly Regex Splitter = new(@"(?<splitter>===+\r?\n)", RegexOptions.ExplicitCapture | RegexOptions.Multiline);
+
+		[GeneratedRegex(@"(?<splitter>===+\r?\n)", RegexOptions.ExplicitCapture | RegexOptions.Multiline)]
+		private static partial Regex Splitter();
 	}
 }

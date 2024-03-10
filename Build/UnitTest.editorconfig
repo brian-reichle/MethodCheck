@@ -2,3 +2,4 @@ is_global = true
 global_level = 1000
 
 dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1852.severity = none

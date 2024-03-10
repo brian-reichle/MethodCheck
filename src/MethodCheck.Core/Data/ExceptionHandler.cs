@@ -3,19 +3,15 @@ using System.Reflection;
 
 namespace MethodCheck.Core.Data
 {
-	public sealed class ExceptionHandler
+	public sealed class ExceptionHandler(
+		ExceptionHandlingClauseOptions type,
+		ILRange tryRange,
+		ILRange handlerRange,
+		int filterOrType)
 	{
-		public ExceptionHandler(ExceptionHandlingClauseOptions type, ILRange tryRange, ILRange handlerRange, int filterOrType)
-		{
-			Type = type;
-			TryRange = tryRange;
-			HandlerRange = handlerRange;
-			FilterOrType = filterOrType;
-		}
-
-		public ExceptionHandlingClauseOptions Type { get; }
-		public ILRange TryRange { get; }
-		public ILRange HandlerRange { get; }
-		public int FilterOrType { get; }
+		public ExceptionHandlingClauseOptions Type { get; } = type;
+		public ILRange TryRange { get; } = tryRange;
+		public ILRange HandlerRange { get; } = handlerRange;
+		public int FilterOrType { get; } = filterOrType;
 	}
 }

@@ -13,7 +13,7 @@ namespace MethodCheck.Core
 	{
 		public static string Format(MethodData data, bool inlineExceptionHandlers = false)
 		{
-			if (data == null) throw new ArgumentNullException(nameof(data));
+			ArgumentNullException.ThrowIfNull(data);
 
 			var sections = inlineExceptionHandlers ? BuildSections(data) : null;
 			var builder = new StringBuilder();
@@ -212,17 +212,11 @@ namespace MethodCheck.Core
 			return new ILRange(start, end - start);
 		}
 
-		struct InstructionWriter
+		struct InstructionWriter(
+			StringBuilder builder,
+			ImmutableHashSet<Label> jumpTargets,
+			ImmutableArray<Instruction> instructions)
 		{
-			public InstructionWriter(StringBuilder builder, ImmutableHashSet<Label> jumpTargets, ImmutableArray<Instruction> instructions)
-			{
-				_builder = builder;
-				_pendingNewline = false;
-				_indentDepth = 1;
-				_jumpTargets = jumpTargets;
-				_instructions = instructions;
-			}
-
 			public void WriteInstructions()
 			{
 				foreach (var instruction in _instructions)
@@ -388,7 +382,7 @@ namespace MethodCheck.Core
 					.AppendLine();
 			}
 
-			void WriteArgument(Instruction instruction)
+			readonly void WriteArgument(Instruction instruction)
 			{
 				if (instruction.Argument == IncompleteArgument.Value)
 				{
@@ -458,12 +452,12 @@ namespace MethodCheck.Core
 				}
 			}
 
-			void WriteIndent()
+			readonly void WriteIndent()
 			{
 				_builder.Append(' ', _indentDepth * 2);
 			}
 
-			int IndexOf(Label label)
+			readonly int IndexOf(Label label)
 			{
 				var min = 0;
 				var max = _instructions.Length - 1;
@@ -490,11 +484,11 @@ namespace MethodCheck.Core
 				throw new ArgumentException("Label does not correspond to an instruction.", nameof(label));
 			}
 
-			bool _pendingNewline;
-			int _indentDepth;
-			readonly StringBuilder _builder;
-			readonly ImmutableHashSet<Label> _jumpTargets;
-			readonly ImmutableArray<Instruction> _instructions;
+			bool _pendingNewline = false;
+			int _indentDepth = 1;
+			readonly StringBuilder _builder = builder;
+			readonly ImmutableHashSet<Label> _jumpTargets = jumpTargets;
+			readonly ImmutableArray<Instruction> _instructions = instructions;
 		}
 	}
 }

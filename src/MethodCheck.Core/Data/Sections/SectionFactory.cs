@@ -12,10 +12,7 @@ namespace MethodCheck.Core.Data
 		// Creates a section from the provided values, assuming the handlers are ordered correctly.
 		public static BaseSection Create(ILRange range, IEnumerable<ExceptionHandler> handlers)
 		{
-			if (handlers == null)
-			{
-				throw new ArgumentNullException(nameof(handlers));
-			}
+			ArgumentNullException.ThrowIfNull(handlers);
 
 			var generator = Builder.New();
 
@@ -29,7 +26,7 @@ namespace MethodCheck.Core.Data
 			return result;
 		}
 
-		struct Builder
+		readonly struct Builder
 		{
 			public static Builder New() => new(new List<TryBuilder>());
 
@@ -181,18 +178,11 @@ namespace MethodCheck.Core.Data
 
 			readonly List<TryBuilder> _pendingTryBlocks;
 
-			struct TryBuilder
+			readonly struct TryBuilder(ILRange tryRange, BaseSection trySection)
 			{
-				public TryBuilder(ILRange tryRange, BaseSection trySection)
-				{
-					TryRange = tryRange;
-					TrySection = trySection;
-					Handlers = ImmutableArray.CreateBuilder<HandlerBlock>();
-				}
-
-				public ILRange TryRange { get; }
-				public BaseSection TrySection { get; }
-				public ImmutableArray<HandlerBlock>.Builder Handlers { get; }
+				public ILRange TryRange { get; } = tryRange;
+				public BaseSection TrySection { get; } = trySection;
+				public ImmutableArray<HandlerBlock>.Builder Handlers { get; } = ImmutableArray.CreateBuilder<HandlerBlock>();
 
 				public TryBlockSection Complete()
 				{

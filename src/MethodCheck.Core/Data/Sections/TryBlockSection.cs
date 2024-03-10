@@ -3,16 +3,13 @@ using System.Collections.Immutable;
 
 namespace MethodCheck.Core.Data
 {
-	public sealed class TryBlockSection : BaseSection
+	public sealed class TryBlockSection(
+		ILRange range,
+		BaseSection tryBlock,
+		ImmutableArray<HandlerBlock> handlerBlocks)
+		: BaseSection(range)
 	{
-		public TryBlockSection(ILRange range, BaseSection tryBlock, ImmutableArray<HandlerBlock> handlerBlocks)
-			: base(range)
-		{
-			TryBlock = tryBlock;
-			HandlerBlocks = handlerBlocks;
-		}
-
-		public BaseSection TryBlock { get; }
-		public ImmutableArray<HandlerBlock> HandlerBlocks { get; }
+		public BaseSection TryBlock { get; } = tryBlock;
+		public ImmutableArray<HandlerBlock> HandlerBlocks { get; } = handlerBlocks;
 	}
 }
