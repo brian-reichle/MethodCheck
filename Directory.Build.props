@@ -22,7 +22,7 @@ CS1591 - Missing XML comment.
 		<Version>0.1.0</Version>
 		<Authors>Brian Reichle</Authors>
 		<Product>MethodCheck</Product>
-		<Copyright>Copyright (c) Brian Reichle 2015-2019</Copyright>
+		<Copyright>Copyright (c) Brian Reichle</Copyright>
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
