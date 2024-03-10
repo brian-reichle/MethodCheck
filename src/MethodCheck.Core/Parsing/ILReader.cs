@@ -8,16 +8,9 @@ using OpCode = System.Reflection.Emit.OpCode;
 
 namespace MethodCheck.Core.Parsing
 {
-	public ref partial struct ILReader
+	public ref partial struct ILReader(ReadOnlySpan<byte> buffer)
 	{
-		public ILReader(ReadOnlySpan<byte> buffer)
-		{
-			_buffer = buffer;
-			_offset = 0;
-			Current = null!;
-		}
-
-		public Instruction Current { get; private set; }
+		public Instruction Current { get; private set; } = null!;
 
 		public bool MoveNext()
 		{
@@ -109,7 +102,7 @@ namespace MethodCheck.Core.Parsing
 			return builder.MoveToImmutable();
 		}
 
-		readonly ReadOnlySpan<byte> _buffer;
-		int _offset;
+		readonly ReadOnlySpan<byte> _buffer = buffer;
+		int _offset = 0;
 	}
 }

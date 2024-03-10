@@ -3,14 +3,8 @@ using System.Collections.Immutable;
 
 namespace MethodCheck.Core.Data.Sections
 {
-	public sealed class SequenceSection : BaseSection
+	public sealed class SequenceSection(ILRange range, ImmutableArray<BaseSection> sections) : BaseSection(range)
 	{
-		public SequenceSection(ILRange range, ImmutableArray<BaseSection> sections)
-			: base(range)
-		{
-			Sections = sections;
-		}
-
-		public ImmutableArray<BaseSection> Sections { get; }
+		public ImmutableArray<BaseSection> Sections { get; } = sections;
 	}
 }

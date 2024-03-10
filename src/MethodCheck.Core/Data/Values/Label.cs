@@ -5,13 +5,8 @@ using System.Globalization;
 
 namespace MethodCheck.Core.Data
 {
-	public readonly struct Label : IEquatable<Label>, IComparable<Label>
+	public readonly struct Label(int offset) : IEquatable<Label>, IComparable<Label>
 	{
-		public Label(int offset)
-		{
-			_offset = offset;
-		}
-
 		public override bool Equals(object? obj) => obj is Label label && Equals(label);
 		public bool Equals(Label other) => _offset == other._offset;
 		public int CompareTo(Label other) => _offset.CompareTo(other._offset);
@@ -31,6 +26,6 @@ namespace MethodCheck.Core.Data
 		public static bool operator <=(Label lhs, Label rhs) => lhs.CompareTo(rhs) <= 0;
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		readonly int _offset;
+		readonly int _offset = offset;
 	}
 }

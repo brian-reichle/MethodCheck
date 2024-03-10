@@ -3,29 +3,19 @@ using System.Collections.Immutable;
 
 namespace MethodCheck.Core.Data
 {
-	public sealed class MethodData
+	public sealed class MethodData(
+		MetadataToken localsToken,
+		int maxStack,
+		int codeSize,
+		MethodDataFlags flags,
+		ImmutableArray<Instruction> instructions,
+		ImmutableArray<MethodDataSection> dataSections)
 	{
-		public MethodData(
-			MetadataToken localsToken,
-			int maxStack,
-			int codeSize,
-			MethodDataFlags flags,
-			ImmutableArray<Instruction> instructions,
-			ImmutableArray<MethodDataSection> dataSections)
-		{
-			LocalsToken = localsToken;
-			MaxStack = maxStack;
-			CodeSize = codeSize;
-			Flags = flags;
-			Instructions = instructions;
-			DataSections = dataSections;
-		}
-
-		public MetadataToken LocalsToken { get; }
-		public int MaxStack { get; }
-		public int CodeSize { get; }
-		public MethodDataFlags Flags { get; }
-		public ImmutableArray<Instruction> Instructions { get; }
-		public ImmutableArray<MethodDataSection> DataSections { get; }
+		public MetadataToken LocalsToken { get; } = localsToken;
+		public int MaxStack { get; } = maxStack;
+		public int CodeSize { get; } = codeSize;
+		public MethodDataFlags Flags { get; } = flags;
+		public ImmutableArray<Instruction> Instructions { get; } = instructions;
+		public ImmutableArray<MethodDataSection> DataSections { get; } = dataSections;
 	}
 }

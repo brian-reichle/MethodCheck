@@ -5,13 +5,8 @@ using System.Globalization;
 
 namespace MethodCheck.Core.Data
 {
-	public readonly struct MetadataToken : IEquatable<MetadataToken>
+	public readonly struct MetadataToken(int token) : IEquatable<MetadataToken>
 	{
-		public MetadataToken(int token)
-		{
-			_token = token;
-		}
-
 		public override bool Equals(object? obj) => obj is MetadataToken token && Equals(token);
 		public bool Equals(MetadataToken other) => other._token == _token;
 		public override int GetHashCode() => _token;
@@ -23,6 +18,6 @@ namespace MethodCheck.Core.Data
 		public static implicit operator MetadataToken(int token) => new(token);
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		readonly int _token;
+		readonly int _token = token;
 	}
 }

@@ -212,17 +212,11 @@ namespace MethodCheck.Core
 			return new ILRange(start, end - start);
 		}
 
-		struct InstructionWriter
+		struct InstructionWriter(
+			StringBuilder builder,
+			ImmutableHashSet<Label> jumpTargets,
+			ImmutableArray<Instruction> instructions)
 		{
-			public InstructionWriter(StringBuilder builder, ImmutableHashSet<Label> jumpTargets, ImmutableArray<Instruction> instructions)
-			{
-				_builder = builder;
-				_pendingNewline = false;
-				_indentDepth = 1;
-				_jumpTargets = jumpTargets;
-				_instructions = instructions;
-			}
-
 			public void WriteInstructions()
 			{
 				foreach (var instruction in _instructions)
@@ -490,11 +484,11 @@ namespace MethodCheck.Core
 				throw new ArgumentException("Label does not correspond to an instruction.", nameof(label));
 			}
 
-			bool _pendingNewline;
-			int _indentDepth;
-			readonly StringBuilder _builder;
-			readonly ImmutableHashSet<Label> _jumpTargets;
-			readonly ImmutableArray<Instruction> _instructions;
+			bool _pendingNewline = false;
+			int _indentDepth = 1;
+			readonly StringBuilder _builder = builder;
+			readonly ImmutableHashSet<Label> _jumpTargets = jumpTargets;
+			readonly ImmutableArray<Instruction> _instructions = instructions;
 		}
 	}
 }
