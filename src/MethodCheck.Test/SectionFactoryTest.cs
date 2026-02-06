@@ -8,8 +8,6 @@ using MethodCheck.Core.Data;
 using MethodCheck.Core.Data.Sections;
 using NUnit.Framework;
 
-#pragma warning disable SA1027 // SA1027 is can't handle raw strings properly.
-
 namespace MethodCheck.Test
 {
 	[TestFixture]
@@ -34,12 +32,12 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<try range="IL_0000 (10)">
-				  <try.block>
-				    <il range="IL_0000 (6)" />
-				  </try.block>
-				  <handler type="Clause" exception="02000010">
-				    <il range="IL_0006 (4)" />
-				  </handler>
+					<try.block>
+						<il range="IL_0000 (6)" />
+					</try.block>
+					<handler type="Clause" exception="02000010">
+						<il range="IL_0006 (4)" />
+					</handler>
 				</try>
 				""";
 
@@ -59,12 +57,12 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<try range="IL_0000 (10)">
-				  <try.block>
-				    <il range="IL_0000 (6)" />
-				  </try.block>
-				  <handler type="Finally">
-				    <il range="IL_0006 (4)" />
-				  </handler>
+					<try.block>
+						<il range="IL_0000 (6)" />
+					</try.block>
+					<handler type="Finally">
+						<il range="IL_0006 (4)" />
+					</handler>
 				</try>
 				""";
 
@@ -84,15 +82,15 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<try range="IL_0000 (12)">
-				  <try.block>
-				    <il range="IL_0000 (3)" />
-				  </try.block>
-				  <handler type="Filter">
-				    <filter>
-				      <il range="IL_0003 (4)" />
-				    </filter>
-				    <il range="IL_0007 (5)" />
-				  </handler>
+					<try.block>
+						<il range="IL_0000 (3)" />
+					</try.block>
+					<handler type="Filter">
+						<filter>
+							<il range="IL_0003 (4)" />
+						</filter>
+						<il range="IL_0007 (5)" />
+					</handler>
 				</try>
 				""";
 
@@ -112,15 +110,15 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<try range="IL_0000 (10)">
-				  <try.block>
-				    <il range="IL_0000 (2)" />
-				  </try.block>
-				  <handler type="Clause" exception="02000011">
-				    <il range="IL_0002 (4)" />
-				  </handler>
-				  <handler type="Clause" exception="02000012">
-				    <il range="IL_0006 (4)" />
-				  </handler>
+					<try.block>
+						<il range="IL_0000 (2)" />
+					</try.block>
+					<handler type="Clause" exception="02000011">
+						<il range="IL_0002 (4)" />
+					</handler>
+					<handler type="Clause" exception="02000012">
+						<il range="IL_0006 (4)" />
+					</handler>
 				</try>
 				""";
 
@@ -141,26 +139,26 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<try range="IL_0000 (20)">
-				  <try.block>
-				    <try range="IL_0000 (10)">
-				      <try.block>
-				        <il range="IL_0000 (5)" />
-				      </try.block>
-				      <handler type="Clause" exception="02000010">
-				        <il range="IL_0005 (5)" />
-				      </handler>
-				    </try>
-				  </try.block>
-				  <handler type="Finally">
-				    <try range="IL_000A (10)">
-				      <try.block>
-				        <il range="IL_000A (5)" />
-				      </try.block>
-				      <handler type="Clause" exception="02000010">
-				        <il range="IL_000F (5)" />
-				      </handler>
-				    </try>
-				  </handler>
+					<try.block>
+						<try range="IL_0000 (10)">
+							<try.block>
+								<il range="IL_0000 (5)" />
+							</try.block>
+							<handler type="Clause" exception="02000010">
+								<il range="IL_0005 (5)" />
+							</handler>
+						</try>
+					</try.block>
+					<handler type="Finally">
+						<try range="IL_000A (10)">
+							<try.block>
+								<il range="IL_000A (5)" />
+							</try.block>
+							<handler type="Clause" exception="02000010">
+								<il range="IL_000F (5)" />
+							</handler>
+						</try>
+					</handler>
 				</try>
 				""";
 
@@ -182,25 +180,25 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<seq range="IL_0000 (22)">
-				  <il range="IL_0000 (2)" />
-				  <try range="IL_0002 (8)">
-				    <try.block>
-				      <il range="IL_0002 (4)" />
-				    </try.block>
-				    <handler type="Clause" exception="02000010">
-				      <il range="IL_0006 (4)" />
-				    </handler>
-				  </try>
-				  <il range="IL_000A (2)" />
-				  <try range="IL_000C (8)">
-				    <try.block>
-				      <il range="IL_000C (4)" />
-				    </try.block>
-				    <handler type="Clause" exception="02000010">
-				      <il range="IL_0010 (4)" />
-				    </handler>
-				  </try>
-				  <il range="IL_0014 (2)" />
+					<il range="IL_0000 (2)" />
+					<try range="IL_0002 (8)">
+						<try.block>
+							<il range="IL_0002 (4)" />
+						</try.block>
+						<handler type="Clause" exception="02000010">
+							<il range="IL_0006 (4)" />
+						</handler>
+					</try>
+					<il range="IL_000A (2)" />
+					<try range="IL_000C (8)">
+						<try.block>
+							<il range="IL_000C (4)" />
+						</try.block>
+						<handler type="Clause" exception="02000010">
+							<il range="IL_0010 (4)" />
+						</handler>
+					</try>
+					<il range="IL_0014 (2)" />
 				</seq>
 				""";
 
@@ -221,23 +219,23 @@ namespace MethodCheck.Test
 			const string Expected =
 				"""
 				<try range="IL_0000 (10)">
-				  <try.block>
-				    <seq range="IL_0000 (8)">
-				      <il range="IL_0000 (2)" />
-				      <try range="IL_0002 (4)">
-				        <try.block>
-				          <il range="IL_0002 (2)" />
-				        </try.block>
-				        <handler type="Clause" exception="02000010">
-				          <il range="IL_0004 (2)" />
-				        </handler>
-				      </try>
-				      <il range="IL_0006 (2)" />
-				    </seq>
-				  </try.block>
-				  <handler type="Finally">
-				    <il range="IL_0008 (2)" />
-				  </handler>
+					<try.block>
+						<seq range="IL_0000 (8)">
+							<il range="IL_0000 (2)" />
+							<try range="IL_0002 (4)">
+								<try.block>
+									<il range="IL_0002 (2)" />
+								</try.block>
+								<handler type="Clause" exception="02000010">
+									<il range="IL_0004 (2)" />
+								</handler>
+							</try>
+							<il range="IL_0006 (2)" />
+						</seq>
+					</try.block>
+					<handler type="Finally">
+						<il range="IL_0008 (2)" />
+					</handler>
 				</try>
 				""";
 
@@ -293,7 +291,7 @@ namespace MethodCheck.Test
 			var settings = new XmlWriterSettings()
 			{
 				Indent = true,
-				IndentChars = "  ",
+				IndentChars = "\t",
 				OmitXmlDeclaration = true,
 			};
 
