@@ -1,8 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 
 namespace MethodCheck.Core
 {
@@ -76,30 +74,64 @@ namespace MethodCheck.Core
 
 		public static string Format(ReadOnlySpan<byte> blob)
 		{
-			var builder = new StringBuilder();
-
-			for (var i = 0; i < blob.Length; i++)
+			if (blob.Length == 0)
 			{
-				if (i > 0)
-				{
-					if ((i & 0xF) == 0)
-					{
-						builder.AppendLine();
-					}
-					else if ((i & 0x3) == 0)
-					{
-						builder.Append("  ");
-					}
-					else
-					{
-						builder.Append(' ');
-					}
-				}
-
-				builder.Append(blob[i].ToString("X2", CultureInfo.InvariantCulture));
+				return string.Empty;
 			}
 
-			return builder.ToString();
+			// 2 characters per byte +
+			// one separator character per byte after the first +
+			// one additional separator character every 4 bytes after the first.
+			//
+			// After every 16 bytes, the separator will be a newline, otherwise it will be spaces.
+			var length = 2 + (((blob.Length - 1) * 13) >> 2);
+
+			if (Environment.NewLine.Length != 2)
+			{
+				// We calculated length based on Environment.NewLine being 2 characters.
+				// We need to adjust if it wasn't for some reason.
+				length += (Environment.NewLine.Length - 2) * ((blob.Length - 1) >> 4);
+			}
+
+			return string.Create(
+				length,
+				blob,
+				static (target, blob) =>
+				{
+					var write = 0;
+					var nl = Environment.NewLine.AsSpan();
+
+					WriteByte(target.Slice(write), blob[0]);
+					write += 2;
+
+					for (var i = 1; i < blob.Length; i++)
+					{
+						if ((i & 0xF) == 0)
+						{
+							nl.CopyTo(target.Slice(write));
+							write += nl.Length;
+						}
+						else
+						{
+							if ((i & 0x3) == 0)
+							{
+								target[write++] = ' ';
+							}
+
+							target[write++] = ' ';
+						}
+
+						WriteByte(target.Slice(write), blob[i]);
+						write += 2;
+					}
+				});
+
+			static void WriteByte(Span<char> target, byte b)
+			{
+				const string Alphabet = "0123456789ABCDEF";
+				target[0] = Alphabet[b >> 4];
+				target[1] = Alphabet[b & 0xF];
+			}
 		}
 	}
 }
