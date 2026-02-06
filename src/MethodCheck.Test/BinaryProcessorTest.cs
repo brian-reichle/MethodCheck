@@ -11,7 +11,7 @@ namespace MethodCheck.Test
 		[Test]
 		public void ParseEmpty()
 		{
-			var blob = BinaryProcessor.Parse(string.Empty.AsSpan());
+			var blob = BinaryProcessor.Parse([]);
 			Assert.That(blob, Is.Empty);
 		}
 
@@ -19,36 +19,38 @@ namespace MethodCheck.Test
 		public void Parse()
 		{
 			var blob = BinaryProcessor.Parse("42 51 0A\r\n\r\n54".AsSpan());
-			Assert.That(blob, Is.EqualTo(new byte[] { 0x42, 0x51, 0x0A, 0x54 }));
+			Assert.That(blob, Is.EqualTo([0x42, 0x51, 0x0A, 0x54]));
 		}
 
 		[Test]
 		public void ParseHalfByte()
 		{
 			var blob = BinaryProcessor.Parse("4".AsSpan());
-			Assert.That(blob, Is.EqualTo(new byte[] { 0x40 }));
+			Assert.That(blob, Is.EqualTo([0x40]));
 		}
 
 		[Test]
 		public void ParseComments()
 		{
 			var blob = BinaryProcessor.Parse("42 51 0A // 05\r\n\r\n54".AsSpan());
-			Assert.That(blob, Is.EqualTo(new byte[] { 0x42, 0x51, 0x0A, 0x54 }));
+			Assert.That(blob, Is.EqualTo([0x42, 0x51, 0x0A, 0x54]));
 		}
 
 		[Test]
 		public void FormatEmpty()
 		{
-			Assert.That(BinaryProcessor.Format(Array.Empty<byte>()), Is.EqualTo(string.Empty));
+			Assert.That(BinaryProcessor.Format([]), Is.EqualTo(string.Empty));
 		}
 
 		[Test]
 		public void Format()
 		{
 			const string Expected =
-@"00 01 02 03  04 05 06 07  08 09 0A 0B  0C 0D 0E 0F
-10 11 12 13  14 15 16 17  18 19 1A 1B  1C 1D 1E 1F
-20";
+				"""
+				00 01 02 03  04 05 06 07  08 09 0A 0B  0C 0D 0E 0F
+				10 11 12 13  14 15 16 17  18 19 1A 1B  1C 1D 1E 1F
+				20
+				""";
 
 			ReadOnlySpan<byte> blob = new byte[]
 			{
