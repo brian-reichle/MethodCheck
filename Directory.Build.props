@@ -14,8 +14,9 @@ CS1591 - Missing XML comment.
 		-->
 		<WarningsNotAsErrors>618,1030,1701,1702</WarningsNotAsErrors>
 		<NoWarn>1591</NoWarn>
-		<LangVersion>12.0</LangVersion>
+		<LangVersion>14.0</LangVersion>
 		<Nullable>enable</Nullable>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
 
