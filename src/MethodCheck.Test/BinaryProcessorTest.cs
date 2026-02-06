@@ -23,6 +23,20 @@ namespace MethodCheck.Test
 		}
 
 		[Test]
+		public void ParseLowercase()
+		{
+			var blob = BinaryProcessor.Parse("ab cd ef".AsSpan());
+			Assert.That(blob, Is.EqualTo([0xAB, 0xCD, 0xEF]));
+		}
+
+		[Test]
+		public void ParseUppercase()
+		{
+			var blob = BinaryProcessor.Parse("AB CD EF".AsSpan());
+			Assert.That(blob, Is.EqualTo([0xAB, 0xCD, 0xEF]));
+		}
+
+		[Test]
 		public void ParseHalfByte()
 		{
 			var blob = BinaryProcessor.Parse("4".AsSpan());
@@ -39,7 +53,35 @@ namespace MethodCheck.Test
 		[Test]
 		public void FormatEmpty()
 		{
-			Assert.That(BinaryProcessor.Format([]), Is.EqualTo(string.Empty));
+			Assert.That(BinaryProcessor.Format([]), Is.SameAs(string.Empty));
+		}
+
+		[Test]
+		public void FormatSingle()
+		{
+			Assert.That(BinaryProcessor.Format([0x42]), Is.EqualTo("42"));
+		}
+
+		[Test]
+		public void FormatQuad()
+		{
+			Assert.That(BinaryProcessor.Format([0x01, 0x23, 0x45, 0x67]), Is.EqualTo("01 23 45 67"));
+		}
+
+		[Test]
+		public void FormatLine()
+		{
+			const string Expected =
+				"""
+				00 01 02 03  04 05 06 07  08 09 0A 0B  0C 0D 0E 0F
+				""";
+
+			ReadOnlySpan<byte> blob =
+			[
+				0x00, 0x01, 0x02, 0x03,  0x04, 0x05, 0x06, 0x07,  0x08, 0x09, 0x0A, 0x0B,  0x0C, 0x0D, 0x0E, 0x0F,
+			];
+
+			Assert.That(BinaryProcessor.Format(blob), Is.EqualTo(Expected));
 		}
 
 		[Test]
@@ -52,12 +94,12 @@ namespace MethodCheck.Test
 				20
 				""";
 
-			ReadOnlySpan<byte> blob = new byte[]
-			{
-0x00, 0x01, 0x02, 0x03,  0x04, 0x05, 0x06, 0x07,  0x08, 0x09, 0x0A, 0x0B,  0x0C, 0x0D, 0x0E, 0x0F,
-0x10, 0x11, 0x12, 0x13,  0x14, 0x15, 0x16, 0x17,  0x18, 0x19, 0x1A, 0x1B,  0x1C, 0x1D, 0x1E, 0x1F,
-0x20,
-			};
+			ReadOnlySpan<byte> blob =
+			[
+				0x00, 0x01, 0x02, 0x03,  0x04, 0x05, 0x06, 0x07,  0x08, 0x09, 0x0A, 0x0B,  0x0C, 0x0D, 0x0E, 0x0F,
+				0x10, 0x11, 0x12, 0x13,  0x14, 0x15, 0x16, 0x17,  0x18, 0x19, 0x1A, 0x1B,  0x1C, 0x1D, 0x1E, 0x1F,
+				0x20,
+			];
 
 			Assert.That(BinaryProcessor.Format(blob), Is.EqualTo(Expected));
 		}
