@@ -1,0 +1,4 @@
+# C# files
+[*.cs]
+# CA1515 only causes problems in WPF assemblies.
+dotnet_diagnostic.CA1515.severity = none
