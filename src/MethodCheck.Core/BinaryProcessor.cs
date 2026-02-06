@@ -29,17 +29,16 @@ namespace MethodCheck.Core
 				{
 					continue;
 				}
-				else if (c >= '0' && c <= '9')
+
+				c |= '\x20';
+
+				if ((uint)(c - '0') <= 9)
 				{
 					x = unchecked((byte)(c - '0'));
 				}
-				else if (c >= 'a' && c <= 'f')
+				else if ((uint)(c - 'a') <= 6)
 				{
 					x = unchecked((byte)(c - 'a' + 10));
-				}
-				else if (c >= 'A' && c <= 'F')
-				{
-					x = unchecked((byte)(c - 'A' + 10));
 				}
 				else if (c == '/' && index < text.Length && text[index] == '/')
 				{

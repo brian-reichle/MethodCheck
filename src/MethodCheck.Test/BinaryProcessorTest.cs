@@ -23,6 +23,20 @@ namespace MethodCheck.Test
 		}
 
 		[Test]
+		public void ParseLowercase()
+		{
+			var blob = BinaryProcessor.Parse("ab cd ef".AsSpan());
+			Assert.That(blob, Is.EqualTo([0xAB, 0xCD, 0xEF]));
+		}
+
+		[Test]
+		public void ParseUppercase()
+		{
+			var blob = BinaryProcessor.Parse("AB CD EF".AsSpan());
+			Assert.That(blob, Is.EqualTo([0xAB, 0xCD, 0xEF]));
+		}
+
+		[Test]
 		public void ParseHalfByte()
 		{
 			var blob = BinaryProcessor.Parse("4".AsSpan());
