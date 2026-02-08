@@ -30,25 +30,28 @@ namespace MethodCheck.Core
 					continue;
 				}
 
-				c |= '\x20';
-
 				if ((uint)(c - '0') <= 9)
 				{
 					x = unchecked((byte)(c - '0'));
 				}
-				else if ((uint)(c - 'a') <= 6)
-				{
-					x = unchecked((byte)(c - 'a' + 10));
-				}
-				else if (c == '/' && index < text.Length && text[index] == '/')
-				{
-					readingComment = true;
-					index++;
-					continue;
-				}
 				else
 				{
-					return null;
+					c |= '\x20';
+
+					if ((uint)(c - 'a') <= 5)
+					{
+						x = unchecked((byte)(c - 'a' + 10));
+					}
+					else if (c == '/' && index < text.Length && text[index] == '/')
+					{
+						readingComment = true;
+						index++;
+						continue;
+					}
+					else
+					{
+						return null;
+					}
 				}
 
 				if (halfByte)
