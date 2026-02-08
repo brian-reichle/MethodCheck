@@ -8,6 +8,14 @@ namespace MethodCheck.Test
 	[TestFixture]
 	class BinaryProcessorTest
 	{
+		[TestCase("42 = 67")]
+		[TestCase("01 G0")]
+		[TestCase("0\u0011", TestName = "{m}(controlChar)")]
+		public void ParseInvalid(string text)
+		{
+			Assert.That(BinaryProcessor.Parse(text), Is.Null);
+		}
+
 		[Test]
 		public void ParseEmpty()
 		{
