@@ -2,13 +2,12 @@
 using MethodCheck.Core.Data;
 using NUnit.Framework;
 
-namespace MethodCheck.Test
+namespace MethodCheck.Test;
+
+[TestFixture]
+class MetadataTokenTest
 {
-	[TestFixture]
-	class MetadataTokenTest
-	{
-		[TestCase(0, ExpectedResult = "00000000")]
-		[TestCase(0x0A000042, ExpectedResult = "0A000042")]
-		public string Format(int value) => new MetadataToken(value).ToString();
-	}
+	[TestCase(0, ExpectedResult = "00000000")]
+	[TestCase(0x0A000042, ExpectedResult = "0A000042")]
+	public string Format(int value) => new MetadataToken(value).ToString();
 }

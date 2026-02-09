@@ -55,6 +55,8 @@ csharp_style_inlined_variable_declaration = true:suggestion
 csharp_style_throw_expression = false:none
 csharp_style_conditional_delegate_call = true:suggestion
 
+csharp_style_namespace_declarations = file_scoped:warning
+
 # utf8 strings only clarify if it really is a string. in the case of binary data, it only obfuscates things.
 csharp_style_prefer_utf8_string_literals = false:none
 
