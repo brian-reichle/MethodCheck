@@ -5,223 +5,222 @@ using System.Collections.Immutable;
 using System.Reflection;
 using MethodCheck.Core.Data.Sections;
 
-namespace MethodCheck.Core.Data
+namespace MethodCheck.Core.Data;
+
+public static class SectionFactory
 {
-	public static class SectionFactory
+	// Creates a section from the provided values, assuming the handlers are ordered correctly.
+	public static BaseSection Create(ILRange range, IEnumerable<ExceptionHandler> handlers)
 	{
-		// Creates a section from the provided values, assuming the handlers are ordered correctly.
-		public static BaseSection Create(ILRange range, IEnumerable<ExceptionHandler> handlers)
+		ArgumentNullException.ThrowIfNull(handlers);
+
+		var generator = Builder.New();
+
+		foreach (var handler in handlers)
 		{
-			ArgumentNullException.ThrowIfNull(handlers);
-
-			var generator = Builder.New();
-
-			foreach (var handler in handlers)
-			{
-				generator.Add(handler);
-			}
-
-			var result = generator.CreateSection(range);
-			generator.VerifyEmpty();
-			return result;
+			generator.Add(handler);
 		}
 
-		readonly struct Builder
+		var result = generator.CreateSection(range);
+		generator.VerifyEmpty();
+		return result;
+	}
+
+	readonly struct Builder
+	{
+		public static Builder New() => new(new List<TryBuilder>());
+
+		Builder(List<TryBuilder> pendingTryBlocks)
 		{
-			public static Builder New() => new(new List<TryBuilder>());
+			_pendingTryBlocks = pendingTryBlocks;
+		}
 
-			Builder(List<TryBuilder> pendingTryBlocks)
+		public void Add(ExceptionHandler handler)
+		{
+			var handlerBlock = CreateHandlerBlock(handler);
+			var handlers = FindHandlersMatchingTryBlock(handler.TryRange);
+			handlers.Add(handlerBlock);
+		}
+
+		public BaseSection CreateSection(ILRange range)
+		{
+			var sections = ExtractSectionsInRange(range);
+
+			if (sections.Count == 0)
 			{
-				_pendingTryBlocks = pendingTryBlocks;
+				return new ILSection(range);
+			}
+			else if (sections.Count == 1 && sections[0].Range == range)
+			{
+				return sections[0];
 			}
 
-			public void Add(ExceptionHandler handler)
+			sections.Sort((x, y) => x.Range.Offset.CompareTo(y.Range.Offset));
+			return CreateSequenceSection(range, sections);
+		}
+
+		HandlerBlock CreateHandlerBlock(ExceptionHandler handler)
+		{
+			var handlerSection = CreateSection(handler.HandlerRange);
+
+			if (handler.Type == ExceptionHandlingClauseOptions.Filter)
 			{
-				var handlerBlock = CreateHandlerBlock(handler);
-				var handlers = FindHandlersMatchingTryBlock(handler.TryRange);
-				handlers.Add(handlerBlock);
+				var filterStart = new Label(handler.FilterOrType);
+				var filterRange = new ILRange(filterStart, handler.HandlerRange.Offset - filterStart);
+
+				return new HandlerBlock(
+					handler.Type,
+					CreateSection(filterRange),
+					handlerSection);
 			}
-
-			public BaseSection CreateSection(ILRange range)
+			else
 			{
-				var sections = ExtractSectionsInRange(range);
+				return new HandlerBlock(
+					handler.Type,
+					new MetadataToken(handler.FilterOrType),
+					handlerSection);
+			}
+		}
 
-				if (sections.Count == 0)
+		static BaseSection CreateSequenceSection(ILRange range, List<BaseSection> sections)
+		{
+			var builder = ImmutableArray.CreateBuilder<BaseSection>();
+			var offset = range.Offset;
+
+			foreach (var section in sections)
+			{
+				if (section.Range.Offset > offset)
 				{
-					return new ILSection(range);
+					builder.Add(new ILSection(new ILRange(offset, section.Range.Offset - offset)));
 				}
-				else if (sections.Count == 1 && sections[0].Range == range)
-				{
-					return sections[0];
-				}
 
-				sections.Sort((x, y) => x.Range.Offset.CompareTo(y.Range.Offset));
-				return CreateSequenceSection(range, sections);
+				builder.Add(section);
+				offset = End(section.Range);
 			}
 
-			HandlerBlock CreateHandlerBlock(ExceptionHandler handler)
+			var end = End(range);
+
+			if (offset < end)
 			{
-				var handlerSection = CreateSection(handler.HandlerRange);
+				builder.Add(new ILSection(new ILRange(offset, end - offset)));
+			}
 
-				if (handler.Type == ExceptionHandlingClauseOptions.Filter)
+			return new SequenceSection(range, builder.ToImmutable());
+		}
+
+		List<BaseSection> ExtractSectionsInRange(ILRange range)
+		{
+			var builder = new List<BaseSection>();
+			var write = 0;
+
+			for (var read = 0; read < _pendingTryBlocks.Count; read++)
+			{
+				var item = _pendingTryBlocks[read];
+
+				if (range.Contains(item.TryRange))
 				{
-					var filterStart = new Label(handler.FilterOrType);
-					var filterRange = new ILRange(filterStart, handler.HandlerRange.Offset - filterStart);
+					var newItem = item.Complete();
 
-					return new HandlerBlock(
-						handler.Type,
-						CreateSection(filterRange),
-						handlerSection);
+					if (!range.Contains(newItem.Range))
+					{
+						throw new CannotGenerateSectionException();
+					}
+
+					foreach (var other in builder)
+					{
+						if (newItem.Range.Overlaps(other.Range))
+						{
+							throw new CannotGenerateSectionException();
+						}
+					}
+
+					builder.Add(newItem);
 				}
 				else
 				{
-					return new HandlerBlock(
-						handler.Type,
-						new MetadataToken(handler.FilterOrType),
-						handlerSection);
-				}
-			}
-
-			static BaseSection CreateSequenceSection(ILRange range, List<BaseSection> sections)
-			{
-				var builder = ImmutableArray.CreateBuilder<BaseSection>();
-				var offset = range.Offset;
-
-				foreach (var section in sections)
-				{
-					if (section.Range.Offset > offset)
+					if (write != read)
 					{
-						builder.Add(new ILSection(new ILRange(offset, section.Range.Offset - offset)));
+						_pendingTryBlocks[write] = item;
 					}
 
-					builder.Add(section);
-					offset = End(section.Range);
+					write++;
 				}
-
-				var end = End(range);
-
-				if (offset < end)
-				{
-					builder.Add(new ILSection(new ILRange(offset, end - offset)));
-				}
-
-				return new SequenceSection(range, builder.ToImmutable());
 			}
 
-			List<BaseSection> ExtractSectionsInRange(ILRange range)
+			_pendingTryBlocks.RemoveRange(write, _pendingTryBlocks.Count - write);
+			return builder;
+		}
+
+		ImmutableArray<HandlerBlock>.Builder FindHandlersMatchingTryBlock(ILRange range)
+		{
+			foreach (var item in _pendingTryBlocks)
 			{
-				var builder = new List<BaseSection>();
-				var write = 0;
-
-				for (var read = 0; read < _pendingTryBlocks.Count; read++)
+				if (item.TryRange == range)
 				{
-					var item = _pendingTryBlocks[read];
+					return item.Handlers;
+				}
+			}
 
-					if (range.Contains(item.TryRange))
+			var builder = new TryBuilder(range, CreateSection(range));
+			_pendingTryBlocks.Add(builder);
+			return builder.Handlers;
+		}
+
+		static Label End(ILRange range) => range.Offset + range.Length;
+
+		public void VerifyEmpty()
+		{
+			if (_pendingTryBlocks.Count > 0)
+			{
+				throw new CannotGenerateSectionException();
+			}
+		}
+
+		readonly List<TryBuilder> _pendingTryBlocks;
+
+		readonly struct TryBuilder(ILRange tryRange, BaseSection trySection)
+		{
+			public ILRange TryRange { get; } = tryRange;
+			public BaseSection TrySection { get; } = trySection;
+			public ImmutableArray<HandlerBlock>.Builder Handlers { get; } = ImmutableArray.CreateBuilder<HandlerBlock>();
+
+			public TryBlockSection Complete()
+			{
+				var handlers = Handlers.ToImmutable();
+				handlers.Sort((x, y) => x.HandlerSection.Range.Offset.CompareTo(y.HandlerSection.Range.Offset));
+
+				var end = End(TrySection.Range);
+
+				foreach (var handler in handlers)
+				{
+					var handlerEnd = End(handler.HandlerSection.Range);
+
+					if (handler.FilterSection != null)
 					{
-						var newItem = item.Complete();
+						var filterRange = handler.FilterSection.Range;
 
-						if (!range.Contains(newItem.Range))
+						if (filterRange.Offset != end)
 						{
 							throw new CannotGenerateSectionException();
 						}
 
-						foreach (var other in builder)
-						{
-							if (newItem.Range.Overlaps(other.Range))
-							{
-								throw new CannotGenerateSectionException();
-							}
-						}
-
-						builder.Add(newItem);
+						end = End(filterRange);
 					}
-					else
+
+					var handlerRange = handler.HandlerSection.Range;
+
+					if (handlerRange.Offset != end)
 					{
-						if (write != read)
-						{
-							_pendingTryBlocks[write] = item;
-						}
-
-						write++;
-					}
-				}
-
-				_pendingTryBlocks.RemoveRange(write, _pendingTryBlocks.Count - write);
-				return builder;
-			}
-
-			ImmutableArray<HandlerBlock>.Builder FindHandlersMatchingTryBlock(ILRange range)
-			{
-				foreach (var item in _pendingTryBlocks)
-				{
-					if (item.TryRange == range)
-					{
-						return item.Handlers;
-					}
-				}
-
-				var builder = new TryBuilder(range, CreateSection(range));
-				_pendingTryBlocks.Add(builder);
-				return builder.Handlers;
-			}
-
-			static Label End(ILRange range) => range.Offset + range.Length;
-
-			public void VerifyEmpty()
-			{
-				if (_pendingTryBlocks.Count > 0)
-				{
-					throw new CannotGenerateSectionException();
-				}
-			}
-
-			readonly List<TryBuilder> _pendingTryBlocks;
-
-			readonly struct TryBuilder(ILRange tryRange, BaseSection trySection)
-			{
-				public ILRange TryRange { get; } = tryRange;
-				public BaseSection TrySection { get; } = trySection;
-				public ImmutableArray<HandlerBlock>.Builder Handlers { get; } = ImmutableArray.CreateBuilder<HandlerBlock>();
-
-				public TryBlockSection Complete()
-				{
-					var handlers = Handlers.ToImmutable();
-					handlers.Sort((x, y) => x.HandlerSection.Range.Offset.CompareTo(y.HandlerSection.Range.Offset));
-
-					var end = End(TrySection.Range);
-
-					foreach (var handler in handlers)
-					{
-						var handlerEnd = End(handler.HandlerSection.Range);
-
-						if (handler.FilterSection != null)
-						{
-							var filterRange = handler.FilterSection.Range;
-
-							if (filterRange.Offset != end)
-							{
-								throw new CannotGenerateSectionException();
-							}
-
-							end = End(filterRange);
-						}
-
-						var handlerRange = handler.HandlerSection.Range;
-
-						if (handlerRange.Offset != end)
-						{
-							throw new CannotGenerateSectionException();
-						}
-
-						end = End(handlerRange);
+						throw new CannotGenerateSectionException();
 					}
 
-					return new TryBlockSection(
-						new ILRange(TryRange.Offset, end - TryRange.Offset),
-						TrySection,
-						handlers);
+					end = End(handlerRange);
 				}
+
+				return new TryBlockSection(
+					new ILRange(TryRange.Offset, end - TryRange.Offset),
+					TrySection,
+					handlers);
 			}
 		}
 	}

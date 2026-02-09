@@ -6,86 +6,85 @@ using MethodCheck.Core;
 using MethodCheck.Core.Data;
 using MethodCheck.Core.Parsing;
 
-namespace MethodCheck
+namespace MethodCheck;
+
+public partial class MainWindow : Window
 {
-	public partial class MainWindow : Window
+	public static readonly RoutedCommand Run = new(nameof(Run), typeof(MainWindow));
+	public static readonly RoutedCommand SetFocus = new(nameof(SetFocus), typeof(MainWindow));
+
+	public MainWindow()
 	{
-		public static readonly RoutedCommand Run = new(nameof(Run), typeof(MainWindow));
-		public static readonly RoutedCommand SetFocus = new(nameof(SetFocus), typeof(MainWindow));
+		InitializeComponent();
 
-		public MainWindow()
+		Loaded += (sender, e) =>
 		{
-			InitializeComponent();
+			var window = (MainWindow)sender;
+			window.BytesTextBox?.Focus();
+		};
+	}
 
-			Loaded += (sender, e) =>
-			{
-				var window = (MainWindow)sender;
-				window.BytesTextBox?.Focus();
-			};
+	protected override void OnActivated(EventArgs e)
+	{
+		base.OnActivated(e);
+
+		if (IsFocused && BytesTextBox != null)
+		{
+			BytesTextBox.Focus();
 		}
+	}
 
-		protected override void OnActivated(EventArgs e)
+	void BytesTextBox_LostFocus(object sender, RoutedEventArgs e)
+	{
+		DoRun();
+	}
+
+	void CloseExecuted(object sender, ExecutedRoutedEventArgs e)
+	{
+		Close();
+	}
+
+	void RunExecuted(object sender, ExecutedRoutedEventArgs e)
+	{
+		DoRun();
+	}
+
+	void SetFocusExecuted(object sender, ExecutedRoutedEventArgs e)
+	{
+		((FrameworkElement)e.Source).Focus();
+	}
+
+	void DoRun()
+	{
+		var buffer = BinaryProcessor.Parse(BytesTextBox.Text.AsSpan());
+
+		if (buffer != null)
 		{
-			base.OnActivated(e);
+			BytesTextBox.Text = BinaryProcessor.Format(buffer);
 
-			if (IsFocused && BytesTextBox != null)
+			var data = Parse(buffer);
+
+			if (data != null)
 			{
-				BytesTextBox.Focus();
+				var sectioned = ShowSectioned.IsChecked ?? false;
+				ILTextBox.Text = MethodFormatter.Format(data, sectioned);
 			}
 		}
+	}
 
-		void BytesTextBox_LostFocus(object sender, RoutedEventArgs e)
+	MethodData? Parse(ReadOnlySpan<byte> buffer)
+	{
+		if (SourceTypeIL.IsChecked == true)
 		{
-			DoRun();
+			return MethodParser.ParseIL(buffer);
 		}
-
-		void CloseExecuted(object sender, ExecutedRoutedEventArgs e)
+		else if (SourceTypeBody.IsChecked == true)
 		{
-			Close();
+			return MethodParser.ParseBody(buffer);
 		}
-
-		void RunExecuted(object sender, ExecutedRoutedEventArgs e)
+		else
 		{
-			DoRun();
-		}
-
-		void SetFocusExecuted(object sender, ExecutedRoutedEventArgs e)
-		{
-			((FrameworkElement)e.Source).Focus();
-		}
-
-		void DoRun()
-		{
-			var buffer = BinaryProcessor.Parse(BytesTextBox.Text.AsSpan());
-
-			if (buffer != null)
-			{
-				BytesTextBox.Text = BinaryProcessor.Format(buffer);
-
-				var data = Parse(buffer);
-
-				if (data != null)
-				{
-					var sectioned = ShowSectioned.IsChecked ?? false;
-					ILTextBox.Text = MethodFormatter.Format(data, sectioned);
-				}
-			}
-		}
-
-		MethodData? Parse(ReadOnlySpan<byte> buffer)
-		{
-			if (SourceTypeIL.IsChecked == true)
-			{
-				return MethodParser.ParseIL(buffer);
-			}
-			else if (SourceTypeBody.IsChecked == true)
-			{
-				return MethodParser.ParseBody(buffer);
-			}
-			else
-			{
-				return null;
-			}
+			return null;
 		}
 	}
 }

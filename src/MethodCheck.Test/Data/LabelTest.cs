@@ -2,14 +2,13 @@
 using MethodCheck.Core.Data;
 using NUnit.Framework;
 
-namespace MethodCheck.Test
+namespace MethodCheck.Test;
+
+[TestFixture]
+class LabelTest
 {
-	[TestFixture]
-	class LabelTest
-	{
-		[TestCase(0, ExpectedResult = "IL_0000")]
-		[TestCase(10, ExpectedResult = "IL_000A")]
-		[TestCase(32, ExpectedResult = "IL_0020")]
-		public string Format(int offset) => new Label(offset).ToString();
-	}
+	[TestCase(0, ExpectedResult = "IL_0000")]
+	[TestCase(10, ExpectedResult = "IL_000A")]
+	[TestCase(32, ExpectedResult = "IL_0020")]
+	public string Format(int offset) => new Label(offset).ToString();
 }

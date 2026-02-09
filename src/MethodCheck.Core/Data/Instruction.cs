@@ -1,41 +1,40 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System.Reflection.Emit;
 
-namespace MethodCheck.Core.Data
+namespace MethodCheck.Core.Data;
+
+public sealed class Instruction
 {
-	public sealed class Instruction
+	public const int MaxMnemonicLength = 14;
+
+	public Instruction(ILRange range, OpCode opcode, object? argument)
 	{
-		public const int MaxMnemonicLength = 14;
+		Kind = InstructionKind.OpCode;
+		Range = range;
+		OpCode = opcode;
+		Argument = argument;
+	}
 
-		public Instruction(ILRange range, OpCode opcode, object? argument)
+	public Instruction(ILRange range)
+	{
+		Kind = InstructionKind.Invalid;
+		Range = range;
+	}
+
+	public InstructionKind Kind { get; }
+	public ILRange Range { get; }
+	public OpCode OpCode { get; }
+	public object? Argument { get; }
+
+	public override string ToString()
+	{
+		if (Argument == null)
 		{
-			Kind = InstructionKind.OpCode;
-			Range = range;
-			OpCode = opcode;
-			Argument = argument;
+			return Range.Offset + ": " + OpCode.Name;
 		}
-
-		public Instruction(ILRange range)
+		else
 		{
-			Kind = InstructionKind.Invalid;
-			Range = range;
-		}
-
-		public InstructionKind Kind { get; }
-		public ILRange Range { get; }
-		public OpCode OpCode { get; }
-		public object? Argument { get; }
-
-		public override string ToString()
-		{
-			if (Argument == null)
-			{
-				return Range.Offset + ": " + OpCode.Name;
-			}
-			else
-			{
-				return Range.Offset + ": " + OpCode.Name + " " + Argument;
-			}
+			return Range.Offset + ": " + OpCode.Name + " " + Argument;
 		}
 	}
 }
